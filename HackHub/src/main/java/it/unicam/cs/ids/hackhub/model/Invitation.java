@@ -33,7 +33,7 @@ public class Invitation {
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "recipient_id", nullable = false)
-	private User recipient;
+	private User recipient; //rappresenta l' utente destinatario dell' invito
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
