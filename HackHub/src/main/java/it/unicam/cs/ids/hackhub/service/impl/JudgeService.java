@@ -13,7 +13,7 @@ import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.JudgeRepository;
 import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.IJudgeService;
-import it.unicam.cs.ids.hackhub.service.validation.EvaluationContentValidator;
+import it.unicam.cs.ids.hackhub.service.validation.EvaluationInputValidator;
 import it.unicam.cs.ids.hackhub.service.validation.EvaluationRequestContext;
 import it.unicam.cs.ids.hackhub.service.validation.EvaluationRequestValidator;
 import it.unicam.cs.ids.hackhub.service.validation.HackathonInEvaluationValidator;
@@ -43,7 +43,7 @@ public class JudgeService implements IJudgeService {
 			HackathonInEvaluationValidator hackathonInEvaluationValidator,
 			SubmissionBelongsToHackathonValidator submissionBelongsToHackathonValidator,
 			SubmissionNotAlreadyEvaluatedValidator submissionNotAlreadyEvaluatedValidator,
-			EvaluationContentValidator evaluationContentValidator) {
+			EvaluationInputValidator evaluationInputValidator) {
 		this.judgeRepository = judgeRepository;
 		this.hackathonRepository = hackathonRepository;
 		this.submissionRepository = submissionRepository;
@@ -54,7 +54,7 @@ public class JudgeService implements IJudgeService {
 				.setNext(hackathonInEvaluationValidator)
 				.setNext(submissionBelongsToHackathonValidator)
 				.setNext(submissionNotAlreadyEvaluatedValidator)
-				.setNext(evaluationContentValidator);
+				.setNext(evaluationInputValidator);
 	}
 
 	@Override

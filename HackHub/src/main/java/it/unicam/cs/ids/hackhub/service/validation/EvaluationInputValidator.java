@@ -4,7 +4,7 @@ import it.unicam.cs.ids.hackhub.exception.InvalidEvaluationException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EvaluationContentValidator extends AbstractEvaluationRequestValidator {
+public class EvaluationInputValidator extends AbstractEvaluationRequestValidator {
 
 	private static final int MIN_SCORE = 0;
 	private static final int MAX_SCORE = 10;
