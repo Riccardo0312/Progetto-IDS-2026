@@ -161,22 +161,8 @@ public class Hackathon {
 		return true;
 	}
 
-	public boolean isRunning() {
-		LocalDate dataCorrente = LocalDate.now();
-		if (dataCorrente.isAfter(registrationDeadline) && status == HackathonStatus.REGISTRATION) {
-			status = HackathonStatus.RUNNING;
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isInEvaluation() {
-		LocalDate dataCorrente = LocalDate.now();
-		if (dataCorrente.isAfter(endDate) && status == HackathonStatus.RUNNING) {
-			status = HackathonStatus.EVALUATION;
-			return true;
-		}
-		return false;
+	public void updateStatus() {
+		this.status = HackathonStatus.updateStatus(status, registrationDeadline, endDate);
 	}
 
 
