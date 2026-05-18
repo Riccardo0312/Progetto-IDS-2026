@@ -1,11 +1,9 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
-import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Evaluation;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
-import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Judge;
 import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.repository.EvaluationRepository;
@@ -101,9 +99,15 @@ public class JudgeService implements IJudgeService {
 	}
 
 	private Hackathon findHackathonById(Long hackathonId) {
-		return hackathonRepository
-				.findById(hackathonId)
-				.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
+		Hackathon hackathon =
+				hackathonRepository
+						.findById(hackathonId)
+						.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
+		// Allinea lo status persistito al tempo reale prima delle guardie di ruolo:
+		// un hackathon con endDate gia passata deve poter essere valutato dal giudice
+		// anche se nessuno ha ancora forzato il refresh.
+		hackathon.updateStatus();
+		return hackathon;
 	}
 
 	private Submission findSubmissionById(Long submissionId) {
@@ -121,10 +125,7 @@ public class JudgeService implements IJudgeService {
 					"Judge " + judgeId + " is not assigned to hackathon " + hackathon.getId());
 		}
 
-		if (hackathon.getStatus() != HackathonStatus.EVALUATION) {
-			throw new InvalidHackathonStateException(
-					hackathon.getId(), hackathon.getStatus(), HackathonStatus.EVALUATION);
-		}
+		hackathon.ensureJudgingActionsAllowed();
 	}
 
 	private String normalizeJudgment(String judgment) {

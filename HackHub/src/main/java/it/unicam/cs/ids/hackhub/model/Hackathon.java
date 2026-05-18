@@ -24,6 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import it.unicam.cs.ids.hackhub.model.state.HackathonState;
+import it.unicam.cs.ids.hackhub.model.state.HackathonStateFactory;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -78,6 +81,7 @@ public class Hackathon {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
+	@Setter(AccessLevel.PROTECTED)
 	private HackathonStatus status = HackathonStatus.REGISTRATION;
 
 	@NotNull
@@ -162,7 +166,47 @@ public class Hackathon {
 	}
 
 	public void updateStatus() {
-		this.status = HackathonStatus.updateStatus(status, registrationDeadline, endDate);
+		updateStatus(LocalDate.now());
+	}
+
+	public void updateStatus(LocalDate currentDate) {
+		this.status = getCurrentState().updateStatus(currentDate, registrationDeadline, endDate);
+	}
+
+	public void ensureMentorActionsAllowed() {
+		getCurrentState().ensureMentorActionsAllowed(id);
+	}
+
+	public void ensureJudgingActionsAllowed() {
+		getCurrentState().ensureJudgingActionsAllowed(id);
+	}
+
+	public void ensureWinnerProclamationAllowed() {
+		getCurrentState().ensureWinnerProclamationAllowed(id);
+	}
+
+	/**
+	 * Transizione esplicita verso lo stato {@code CONCLUDED}.
+	 *
+	 * <p>Centralizza nel modello le invarianti della proclamazione del vincitore:
+	 * stato corrente compatibile, presenza del vincitore e completezza delle
+	 * valutazioni. I service non devono toccare direttamente {@code status} ne
+	 * {@code winningTeam}.
+	 */
+	public void concludeWith(Team winningTeam) {
+		if (winningTeam == null) {
+			throw new IllegalArgumentException("Il team vincitore non può essere null");
+		}
+		ensureWinnerProclamationAllowed();
+		if (!allEvaluated()) {
+			throw new IllegalStateException("Ci sono ancora sottomissioni non valutate");
+		}
+		this.winningTeam = winningTeam;
+		this.status = HackathonStatus.CONCLUDED;
+	}
+
+	private HackathonState getCurrentState() {
+		return HackathonStateFactory.fromStatus(status);
 	}
 
 
