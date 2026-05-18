@@ -1,10 +1,8 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
-import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
-import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.MentoringCallProposal;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
@@ -128,9 +126,14 @@ public class MentorService implements IMentorService {
 	}
 
 	private Hackathon findHackathonById(Long hackathonId) {
-		return hackathonRepository
-				.findById(hackathonId)
-				.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
+		Hackathon hackathon =
+				hackathonRepository
+						.findById(hackathonId)
+						.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
+		// Allinea lo status persistito al tempo reale prima di applicare le guardie:
+		// evita che un hackathon con endDate gia passata risulti ancora RUNNING per il client.
+		hackathon.updateStatus();
+		return hackathon;
 	}
 
 	private SupportRequest findSupportRequestById(Long supportRequestId) {
@@ -154,10 +157,7 @@ public class MentorService implements IMentorService {
 					"Mentor " + mentorId + " is not assigned to hackathon " + hackathon.getId());
 		}
 
-		if (hackathon.getStatus() != HackathonStatus.RUNNING) {
-			throw new InvalidHackathonStateException(
-					hackathon.getId(), hackathon.getStatus(), HackathonStatus.RUNNING);
-		}
+		hackathon.ensureMentorActionsAllowed();
 	}
 
 	private void validateSupportRequestBelongsToHackathon(

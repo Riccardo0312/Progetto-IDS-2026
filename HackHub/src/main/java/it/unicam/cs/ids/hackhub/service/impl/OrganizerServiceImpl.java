@@ -1,7 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.model.Hackathon;
-import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Judge;
 import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.Organizer;
@@ -64,7 +63,6 @@ public class OrganizerServiceImpl implements OrganizerService {
         }
 
         hackathon.setOrganizer(organizer);
-        hackathon.setStatus(HackathonStatus.REGISTRATION);
         hackathon.addJudge(judge);
         for (int i = 0; i < mentors.size(); i++) {
             hackathon.addMentor(mentors.get(i));
@@ -88,24 +86,11 @@ public class OrganizerServiceImpl implements OrganizerService {
     @Override
     @Transactional
     public void proclaimWinner(Long hackathonId, Team winningTeam) {
-        if (winningTeam == null) {
-            throw new IllegalArgumentException("Il team vincitore non può essere null");
-        }
-
         Hackathon hackathon = findHackathonById(hackathonId);
 
-        if (hackathon.getStatus() != HackathonStatus.EVALUATION) {
-            throw new IllegalStateException(
-                    "Il vincitore può essere proclamato solo in fase di valutazione");
-        }
-
-        if (!hackathon.allEvaluated()) {
-            throw new IllegalStateException(
-                    "Ci sono ancora sottomissioni non valutate");
-        }
-
-        hackathon.setWinningTeam(winningTeam);
-        hackathon.setStatus(HackathonStatus.CONCLUDED);
+        // Transizione esplicita gestita dal modello: applica le guardie di stato,
+        // verifica le valutazioni e imposta winningTeam + status = CONCLUDED.
+        hackathon.concludeWith(winningTeam);
         hackathonRepository.save(hackathon);
 
         paymentGateway.payPrize(hackathon, winningTeam, hackathon.getPrizeMoney());
@@ -123,8 +108,13 @@ public class OrganizerServiceImpl implements OrganizerService {
         if (hackathonId == null) {
             throw new IllegalArgumentException("L'ID non può essere null");
         }
-        return hackathonRepository.findById(hackathonId)
+        Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Hackathon non trovato con ID: " + hackathonId));
+        // Allinea lo status persistito al tempo reale: la proclamazione del vincitore
+        // deve poter avvenire appena l'hackathon entra in EVALUATION, anche se nessuno
+        // ha ancora ricaricato l'entita.
+        hackathon.updateStatus();
+        return hackathon;
     }
 }
