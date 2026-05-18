@@ -46,4 +46,8 @@ public class Team {
 	@OneToMany(mappedBy = "team")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
+    public void setCreator(User creator) {
+		this.members.add(new TeamMember());
+		this.members.get(0).setUser(creator);
+    }
 }
