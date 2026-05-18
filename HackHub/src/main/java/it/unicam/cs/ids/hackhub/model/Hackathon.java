@@ -106,4 +106,65 @@ public class Hackathon {
 	@OneToMany(mappedBy = "hackathon")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
+	public Hackathon(String name, String rules, String location,BigDecimal prizeMoney, int maxTeamSize, LocalDate registrationDeadline,LocalDate startDate , LocalDate endDate ) {
+
+		this.name = name;
+		this.rules=rules;
+		this.location=location;
+		this.prizeMoney=prizeMoney;
+		this.maxTeamSize=maxTeamSize;
+		this.registrationDeadline=registrationDeadline;
+		this.startDate=startDate;
+		this.endDate=endDate;
+
+	}
+
+	public void addMentor(Mentor mentor){
+
+		if (mentor == null || mentors.contains(mentor)) {
+			throw new IllegalArgumentException("Mentore non valido o già presente");
+		}
+		mentors.add(mentor);
+	}
+
+	public void addJudge(Judge judge){
+		if (judge == null ) {
+			throw new IllegalArgumentException("Judge non valido");
+		}
+		this.judge = judge;
+	}
+
+	public void removeMentor(Mentor mentor) {
+		if (mentor == null || !mentors.contains(mentor)) {
+			throw new IllegalArgumentException("Mentore non valido o non presente");
+		}
+		mentors.remove(mentor);
+	}
+
+	public void removeJudge() {
+		if (this.judge == null) {
+			throw new IllegalArgumentException("Nessun giudice trovato");
+		}
+		this.judge = null;
+	}
+
+	public boolean allEvaluated() {
+		if (registrations.isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < registrations.size(); i++) {
+			if (registrations.get(i).getSubmission() == null ||
+					registrations.get(i).getSubmission().getEvaluation() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void updateStatus() {
+		this.status = HackathonStatus.updateStatus(status, registrationDeadline, endDate);
+	}
+
+
+
 }
