@@ -11,7 +11,7 @@ public interface OrganizerService {
 
     void addMentorToHackathon(Long hackathonId, Long mentorId);
 
-    void proclameWinner(Long hackathonId, Team winningTeam);
+    void proclaimWinner(Long hackathonId, Team winningTeam);
 
     List<Hackathon> getHackathonsByOrganizer(Long organizerId);
 }

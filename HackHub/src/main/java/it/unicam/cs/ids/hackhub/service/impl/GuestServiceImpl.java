@@ -15,23 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class GuestServiceImpl implements GuestService {
 
     private final HackathonRepository hackathonRepository;
-    private final UserRepository userRepository;
 
     public GuestServiceImpl(HackathonRepository hackathonRepository,
                             UserRepository userRepository) {
 
         this.hackathonRepository = hackathonRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public List<Hackathon> getAllHackathons() {
         List<Hackathon> hackathons = hackathonRepository.findAll();
-        for (int i = 0; i < hackathons.size(); i++) {
-            hackathons.get(i).updateStatus();
-        }
-        hackathonRepository.saveAll(hackathons);
         return hackathons;
     }
 

@@ -87,7 +87,7 @@ public class OrganizerServiceImpl implements OrganizerService {
 
     @Override
     @Transactional
-    public void proclameWinner(Long hackathonId, Team winningTeam) {
+    public void proclaimWinner(Long hackathonId, Team winningTeam) {
         if (winningTeam == null) {
             throw new IllegalArgumentException("Il team vincitore non può essere null");
         }
