@@ -15,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class GuestServiceImpl implements GuestService {
 
     private final HackathonRepository hackathonRepository;
+    private final UserRepository userRepository;
 
     public GuestServiceImpl(HackathonRepository hackathonRepository,
                             UserRepository userRepository) {
 
         this.hackathonRepository = hackathonRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
