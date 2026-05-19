@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.hackhub.model;
 
+import it.unicam.cs.ids.hackhub.model.state.InvitationState;
+import it.unicam.cs.ids.hackhub.model.state.InvitationStateFactory;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,4 +42,17 @@ public class Invitation {
 	@JoinColumn(name = "team_id", nullable = false)
 	private Team team;
 
+	public InvitationState getCurrentState() {
+		return InvitationStateFactory.fromStatus(status);
+	}
+
+	public void accept() {
+		getCurrentState().ensureCanAccept(id);
+		this.status = InvitationStatus.ACCEPTED;
+	}
+
+	public void reject() {
+		getCurrentState().ensureCanReject(id);
+		this.status = InvitationStatus.REJECTED;
+	}
 }
