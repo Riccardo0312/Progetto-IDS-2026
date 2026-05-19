@@ -49,4 +49,9 @@ public class SupportRequest {
 	@OneToOne(mappedBy = "supportRequest")
 	private MentoringCallProposal callProposal;
 
+    public void setHackathon(@NotNull Hackathon hackathon) {
+    }
+
+	public void setRequestDate(LocalDateTime now) {
+	}
 }

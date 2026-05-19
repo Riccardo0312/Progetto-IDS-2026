@@ -20,4 +20,9 @@ public class TeamMember extends User {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
+	public void setUser(User creator) {
+		this.setName(creator.getName());
+		this.setEmail(creator.getEmail());
+		this.setPassword(creator.getPassword());
+	}
 }

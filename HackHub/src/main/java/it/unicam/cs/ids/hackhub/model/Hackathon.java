@@ -22,6 +22,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import it.unicam.cs.ids.hackhub.model.state.HackathonState;
@@ -109,6 +110,11 @@ public class Hackathon {
 
 	@OneToMany(mappedBy = "hackathon")
 	private List<ViolationReport> violationReports = new ArrayList<>();
+
+
+	public ChronoLocalDateTime<?> getDeadline() {
+        return null;
+    }
 
 	public Hackathon(String name, String rules, String location,BigDecimal prizeMoney, int maxTeamSize, LocalDate registrationDeadline,LocalDate startDate , LocalDate endDate ) {
 
@@ -208,7 +214,6 @@ public class Hackathon {
 	private HackathonState getCurrentState() {
 		return HackathonStateFactory.fromStatus(status);
 	}
-
 
 
 }
