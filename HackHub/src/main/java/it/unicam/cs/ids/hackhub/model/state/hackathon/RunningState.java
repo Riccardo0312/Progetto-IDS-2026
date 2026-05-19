@@ -1,4 +1,4 @@
-package it.unicam.cs.ids.hackhub.model.state;
+package it.unicam.cs.ids.hackhub.model.state.hackathon;
 
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import java.time.LocalDate;

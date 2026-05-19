@@ -1,6 +1,6 @@
 package it.unicam.cs.ids.hackhub.config;
 
-import it.unicam.cs.ids.hackhub.service.interfaces.PaymentGateway;
+import it.unicam.cs.ids.hackhub.service.interfaces.IPaymentGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class PaymentGatewayConfiguration {
 
 	@Bean
-	public PaymentGateway developmentPaymentGateway() {
+	public IPaymentGateway developmentPaymentGateway() {
 		return (hackathon, winningTeam, amount) -> {
 		};
 	}

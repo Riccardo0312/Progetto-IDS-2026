@@ -1,6 +1,6 @@
 package it.unicam.cs.ids.hackhub.config;
 
-import it.unicam.cs.ids.hackhub.service.interfaces.CalendarGateway;
+import it.unicam.cs.ids.hackhub.service.interfaces.ICalendarGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class CalendarGatewayConfiguration {
 
 	@Bean
-	public CalendarGateway developmentCalendarGateway() {
+	public ICalendarGateway developmentCalendarGateway() {
 		return (supportRequest, mentor) ->
 				"https://calendar.hackhub.local/bookings/support-"
 						+ supportRequest.getId()

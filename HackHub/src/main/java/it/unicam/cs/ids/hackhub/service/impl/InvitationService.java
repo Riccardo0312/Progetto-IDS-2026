@@ -1,32 +1,36 @@
-package it.unicam.cs.ids.hackhub.services;
+package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.model.*;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
+import it.unicam.cs.ids.hackhub.service.interfaces.IInvitationService;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
-
-public class InvitationService {
+@Service
+public class InvitationService implements IInvitationService {
 
     private final InvitationRepository invitationRepository;
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
 
-    public InvitationService(InvitationRepository invitationRepository, UserRepository userRepository, TeamMemberRepository teamMemberRepository, TeamRepository teamRepository) {
+    public InvitationService(InvitationRepository invitationRepository, UserRepository userRepository,
+                             TeamMemberRepository teamMemberRepository, TeamRepository teamRepository) {
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.teamRepository = teamRepository;
     }
 
+    @Override
     @Transactional
     public Invitation sendInvitation(Long teamId, String recipientEmail, String senderEmail) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
-        User recipient = UserRepository.findByEmail(recipientEmail)
+        User recipient = userRepository.findByEmail(recipientEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Destinatario non trovato"));
 
         Invitation invitation = new Invitation();
@@ -37,11 +41,12 @@ public class InvitationService {
         return invitationRepository.save(invitation);
     }
 
+    @Override
     @Transactional
     public Invitation acceptInvitation(Long invitationId, String userEmail) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new IllegalArgumentException("Invito non trovato"));
-        User user = UserRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
 
         if (!invitation.getRecipient().equals(user)) {

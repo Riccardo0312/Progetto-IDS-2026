@@ -1,7 +1,7 @@
 package it.unicam.cs.ids.hackhub.model;
 
-import it.unicam.cs.ids.hackhub.model.state.InvitationState;
-import it.unicam.cs.ids.hackhub.model.state.InvitationStateFactory;
+import it.unicam.cs.ids.hackhub.model.state.invitation.InvitationState;
+import it.unicam.cs.ids.hackhub.model.state.invitation.InvitationStateFactory;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

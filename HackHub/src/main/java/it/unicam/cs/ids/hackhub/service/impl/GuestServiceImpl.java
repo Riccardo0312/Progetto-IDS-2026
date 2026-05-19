@@ -6,13 +6,13 @@ import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
 import java.util.List;
-import it.unicam.cs.ids.hackhub.service.interfaces.GuestService;
+import it.unicam.cs.ids.hackhub.service.interfaces.IGuestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class GuestServiceImpl implements GuestService {
+public class GuestServiceImpl implements IGuestService {
 
     private final HackathonRepository hackathonRepository;
     private final UserRepository userRepository;

@@ -4,7 +4,7 @@ import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.Team;
 import java.util.List;
 
-public interface OrganizerService {
+public interface IOrganizerService {
 
     Hackathon createHackathon(Hackathon hackathon, Long organizerId,
                               Long judgeId, List<Long> mentorIds);

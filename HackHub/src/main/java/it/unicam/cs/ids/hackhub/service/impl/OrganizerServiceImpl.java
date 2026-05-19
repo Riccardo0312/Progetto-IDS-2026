@@ -11,26 +11,26 @@ import it.unicam.cs.ids.hackhub.model.repository.MentorRepository;
 import it.unicam.cs.ids.hackhub.model.repository.OrganizerRepository;
 import java.util.List;
 
-import it.unicam.cs.ids.hackhub.service.interfaces.OrganizerService;
-import it.unicam.cs.ids.hackhub.service.interfaces.PaymentGateway;
+import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
+import it.unicam.cs.ids.hackhub.service.interfaces.IPaymentGateway;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class OrganizerServiceImpl implements OrganizerService {
+public class OrganizerServiceImpl implements IOrganizerService {
 
     private final HackathonRepository hackathonRepository;
     private final OrganizerRepository organizerRepository;
     private final JudgeRepository judgeRepository;
     private final MentorRepository mentorRepository;
-    private final PaymentGateway paymentGateway;
+    private final IPaymentGateway paymentGateway;
 
     public OrganizerServiceImpl(HackathonRepository hackathonRepository,
                                 OrganizerRepository organizerRepository,
                                 JudgeRepository judgeRepository,
                                 MentorRepository mentorRepository,
-                                PaymentGateway paymentGateway) {
+                                IPaymentGateway paymentGateway) {
         this.hackathonRepository = hackathonRepository;
         this.organizerRepository = organizerRepository;
         this.judgeRepository = judgeRepository;

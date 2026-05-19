@@ -15,7 +15,7 @@ import it.unicam.cs.ids.hackhub.model.repository.MentoringCallProposalRepository
 import it.unicam.cs.ids.hackhub.model.repository.SupportRequestRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.ViolationReportRepository;
-import it.unicam.cs.ids.hackhub.service.interfaces.CalendarGateway;
+import it.unicam.cs.ids.hackhub.service.interfaces.ICalendarGateway;
 import it.unicam.cs.ids.hackhub.service.interfaces.IMentorService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +34,7 @@ public class MentorService implements IMentorService {
 	private final TeamRepository teamRepository;
 	private final HackathonRegistrationRepository hackathonRegistrationRepository;
 	private final ViolationReportRepository violationReportRepository;
-	private final CalendarGateway calendarGateway;
+	private final ICalendarGateway calendarGateway;
 
 	public MentorService(
 			MentorRepository mentorRepository,
@@ -44,7 +44,7 @@ public class MentorService implements IMentorService {
 			TeamRepository teamRepository,
 			HackathonRegistrationRepository hackathonRegistrationRepository,
 			ViolationReportRepository violationReportRepository,
-			CalendarGateway calendarGateway) {
+			ICalendarGateway calendarGateway) {
 		this.mentorRepository = mentorRepository;
 		this.hackathonRepository = hackathonRepository;
 		this.supportRequestRepository = supportRequestRepository;

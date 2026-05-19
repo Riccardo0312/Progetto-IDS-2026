@@ -1,23 +1,28 @@
-package it.unicam.cs.ids.hackhub.services;
+package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.SupportRequestRepository;
+import it.unicam.cs.ids.hackhub.service.interfaces.IMentoringRequestService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-public class MentoringService {
+public class MentoringService implements IMentoringRequestService {
 
-    @Autowired
-    private SupportRequestRepository supportRequestRepository;
-    @Autowired
-    private HackathonRegistrationRepository registrationRepository;
+    private final SupportRequestRepository supportRequestRepository;
+    private final HackathonRegistrationRepository registrationRepository;
 
+    public MentoringService(SupportRequestRepository supportRequestRepository,
+                            HackathonRegistrationRepository registrationRepository) {
+        this.supportRequestRepository = supportRequestRepository;
+        this.registrationRepository = registrationRepository;
+    }
+
+    @Override
     @Transactional
     public SupportRequest createSupportRequest(Long registrationId, String message) {
         HackathonRegistration registration = registrationRepository.findById(registrationId)
