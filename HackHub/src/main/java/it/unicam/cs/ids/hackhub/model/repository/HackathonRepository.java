@@ -9,4 +9,5 @@ public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
 
 	List<Hackathon> findByStatus(HackathonStatus status);
 
+	List<Hackathon> findAllByOrderByStartDateAsc();
 }

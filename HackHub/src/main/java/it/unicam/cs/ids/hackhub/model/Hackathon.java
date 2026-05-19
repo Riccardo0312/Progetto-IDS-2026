@@ -22,6 +22,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -106,4 +107,7 @@ public class Hackathon {
 	@OneToMany(mappedBy = "hackathon")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
+	public ChronoLocalDateTime<?> getDeadline() {
+        return null;
+    }
 }
