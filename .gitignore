@@ -33,3 +33,5 @@ build/
 .vscode/
 src/test/
 docs/
+AGENTS.md
+CONTEXT.md

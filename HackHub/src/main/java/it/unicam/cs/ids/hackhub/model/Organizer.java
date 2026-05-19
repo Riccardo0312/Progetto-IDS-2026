@@ -19,4 +19,6 @@ public class Organizer extends StaffMember {
 	@OneToMany(mappedBy = "organizer")
 	private List<Hackathon> organizedHackathons = new ArrayList<>();
 
+
+
 }

@@ -5,5 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface HackathonRegistrationRepository extends JpaRepository<HackathonRegistration, Long> {
 
-    boolean existsByHackathonIdAndTeamId(Long hackathonId, Long teamId);
+   boolean existsByHackathonIdAndTeamId(Long hackathonId, Long teamId);
+
+
+
 }

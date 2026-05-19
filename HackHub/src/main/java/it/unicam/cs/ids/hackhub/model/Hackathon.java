@@ -25,6 +25,9 @@ import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import it.unicam.cs.ids.hackhub.model.state.HackathonState;
+import it.unicam.cs.ids.hackhub.model.state.HackathonStateFactory;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -79,6 +82,7 @@ public class Hackathon {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
+	@Setter(AccessLevel.PROTECTED)
 	private HackathonStatus status = HackathonStatus.REGISTRATION;
 
 	@NotNull
@@ -107,7 +111,109 @@ public class Hackathon {
 	@OneToMany(mappedBy = "hackathon")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
+
 	public ChronoLocalDateTime<?> getDeadline() {
         return null;
     }
+
+	public Hackathon(String name, String rules, String location,BigDecimal prizeMoney, int maxTeamSize, LocalDate registrationDeadline,LocalDate startDate , LocalDate endDate ) {
+
+		this.name = name;
+		this.rules=rules;
+		this.location=location;
+		this.prizeMoney=prizeMoney;
+		this.maxTeamSize=maxTeamSize;
+		this.registrationDeadline=registrationDeadline;
+		this.startDate=startDate;
+		this.endDate=endDate;
+
+	}
+
+	public void addMentor(Mentor mentor){
+
+		if (mentor == null || mentors.contains(mentor)) {
+			throw new IllegalArgumentException("Mentore non valido o già presente");
+		}
+		mentors.add(mentor);
+	}
+
+	public void addJudge(Judge judge){
+		if (judge == null ) {
+			throw new IllegalArgumentException("Judge non valido");
+		}
+		this.judge = judge;
+	}
+
+	public void removeMentor(Mentor mentor) {
+		if (mentor == null || !mentors.contains(mentor)) {
+			throw new IllegalArgumentException("Mentore non valido o non presente");
+		}
+		mentors.remove(mentor);
+	}
+
+	public void removeJudge() {
+		if (this.judge == null) {
+			throw new IllegalArgumentException("Nessun giudice trovato");
+		}
+		this.judge = null;
+	}
+
+	public boolean allEvaluated() {
+		if (registrations.isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < registrations.size(); i++) {
+			if (registrations.get(i).getSubmission() == null ||
+					registrations.get(i).getSubmission().getEvaluation() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void updateStatus() {
+		updateStatus(LocalDate.now());
+	}
+
+	public void updateStatus(LocalDate currentDate) {
+		this.status = getCurrentState().updateStatus(currentDate, registrationDeadline, endDate);
+	}
+
+	public void ensureMentorActionsAllowed() {
+		getCurrentState().ensureMentorActionsAllowed(id);
+	}
+
+	public void ensureJudgingActionsAllowed() {
+		getCurrentState().ensureJudgingActionsAllowed(id);
+	}
+
+	public void ensureWinnerProclamationAllowed() {
+		getCurrentState().ensureWinnerProclamationAllowed(id);
+	}
+
+	/**
+	 * Transizione esplicita verso lo stato {@code CONCLUDED}.
+	 *
+	 * <p>Centralizza nel modello le invarianti della proclamazione del vincitore:
+	 * stato corrente compatibile, presenza del vincitore e completezza delle
+	 * valutazioni. I service non devono toccare direttamente {@code status} ne
+	 * {@code winningTeam}.
+	 */
+	public void concludeWith(Team winningTeam) {
+		if (winningTeam == null) {
+			throw new IllegalArgumentException("Il team vincitore non può essere null");
+		}
+		ensureWinnerProclamationAllowed();
+		if (!allEvaluated()) {
+			throw new IllegalStateException("Ci sono ancora sottomissioni non valutate");
+		}
+		this.winningTeam = winningTeam;
+		this.status = HackathonStatus.CONCLUDED;
+	}
+
+	private HackathonState getCurrentState() {
+		return HackathonStateFactory.fromStatus(status);
+	}
+
+
 }

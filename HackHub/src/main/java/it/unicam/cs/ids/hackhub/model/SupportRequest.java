@@ -38,6 +38,11 @@ public class SupportRequest {
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "hackathon_id", nullable = false)
+	private Hackathon hackathon;
+
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id", nullable = false)
 	private Team team;
 
