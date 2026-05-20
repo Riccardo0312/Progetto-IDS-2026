@@ -59,20 +59,4 @@ public class Submission {
 
 	@OneToOne(mappedBy = "submission")
 	private Evaluation evaluation;
-
-	public void setTeam(@NotNull Team team) {
-	}
-
-	public void setHackathon(@NotNull Hackathon hackathon) {
-	}
-
-	public void setFileData(byte[] bytes) {
-	}
-
-	public void setUploadDate(LocalDateTime now) {
-	}
-
-	public Hackathon getHackathon() {
-        return null;
-    }
 }

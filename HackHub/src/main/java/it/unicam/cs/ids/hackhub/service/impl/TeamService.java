@@ -46,7 +46,8 @@ public class TeamService implements ITeamService {
         TeamMember member = new TeamMember();
         member.setTeam(savedTeam);
         member.setUser(creator);
-        teamMemberRepository.save(member);
+        TeamMember savedMember = teamMemberRepository.save(member);
+        savedTeam.getMembers().add(savedMember);
 
         return savedTeam;
     }

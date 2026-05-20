@@ -12,13 +12,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class HackatonService implements IHackathonRegistrationService {
+public class HackathonService implements IHackathonRegistrationService {
 
     private final HackathonRepository hackathonRepository;
     private final TeamRepository teamRepository;
     private final HackathonRegistrationRepository hackathonRegistrationRepository;
 
-    public HackatonService(HackathonRepository hackathonRepository, TeamRepository teamRepository,
+    public HackathonService(HackathonRepository hackathonRepository, TeamRepository teamRepository,
                            HackathonRegistrationRepository hackathonRegistrationRepository) {
         this.hackathonRepository = hackathonRepository;
         this.teamRepository = teamRepository;

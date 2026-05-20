@@ -32,7 +32,7 @@ public class MentoringService implements IMentoringRequestService {
         request.setTeam(registration.getTeam());
         request.setHackathon(registration.getHackathon());
         request.setMessage(message);
-        request.setRequestDate(LocalDateTime.now());
+        request.setRequestedAt(LocalDateTime.now());
 
         return supportRequestRepository.save(request);
     }

@@ -7,9 +7,8 @@ import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.ISubmissionService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -26,35 +25,47 @@ public class SubmissionService implements ISubmissionService {
 
     @Override
     @Transactional
-    public Submission uploadSubmission(Long registrationId, MultipartFile file) throws IOException {
+    public Submission uploadSubmission(
+            Long registrationId, String title, String description, String projectLink) {
         HackathonRegistration registration = registrationRepository.findById(registrationId)
                 .orElseThrow(() -> new IllegalArgumentException("Registrazione non trovata"));
 
-        if (LocalDateTime.now().isAfter(registration.getHackathon().getDeadline())) {
+        if (isSubmissionDeadlineExpired(registration)) {
             throw new IllegalStateException("Deadline superata");
         }
 
+        LocalDateTime now = LocalDateTime.now();
         Submission submission = new Submission();
-        submission.setTeam(registration.getTeam());
-        submission.setHackathon(registration.getHackathon());
-        submission.setFileData(file.getBytes());
-        submission.setUploadDate(LocalDateTime.now());
+        submission.setRegistration(registration);
+        submission.setTitle(title);
+        submission.setDescription(description);
+        submission.setProjectLink(projectLink);
+        submission.setUploadedAt(now);
+        submission.setLastModifiedAt(now);
 
         return submissionRepository.save(submission);
     }
 
     @Override
     @Transactional
-    public Submission updateSubmission(Long submissionId, MultipartFile file) throws IOException {
+    public Submission updateSubmission(
+            Long submissionId, String title, String description, String projectLink) {
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new IllegalArgumentException("Sottomissione non trovata"));
 
-        if (LocalDateTime.now().isAfter(submission.getHackathon().getDeadline())) {
+        if (isSubmissionDeadlineExpired(submission.getRegistration())) {
             throw new IllegalStateException("Deadline superata");
         }
 
-        submission.setFileData(file.getBytes());
-        submission.setUploadDate(LocalDateTime.now());
+        submission.setTitle(title);
+        submission.setDescription(description);
+        submission.setProjectLink(projectLink);
+        submission.setLastModifiedAt(LocalDateTime.now());
+
         return submissionRepository.save(submission);
+    }
+
+    private boolean isSubmissionDeadlineExpired(HackathonRegistration registration) {
+        return LocalDate.now().isAfter(registration.getHackathon().getEndDate());
     }
 }
