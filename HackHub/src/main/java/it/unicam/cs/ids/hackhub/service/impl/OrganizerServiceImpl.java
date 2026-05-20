@@ -1,6 +1,8 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
+import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Judge;
 import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.Organizer;
@@ -15,6 +17,8 @@ import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
 import it.unicam.cs.ids.hackhub.service.interfaces.IPaymentGateway;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,15 +61,16 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Giudice non trovato con ID: " + judgeId));
 
-        List<Mentor> mentors = mentorRepository.findAllById(mentorIds);
-        if (mentors.size() != mentorIds.size()) {
+        List<Long> distinctMentorIds = mentorIds.stream().distinct().toList();
+        List<Mentor> mentors = mentorRepository.findAllById(distinctMentorIds);
+        if (mentors.size() != distinctMentorIds.size()) {
             throw new IllegalArgumentException("Uno o più mentori non trovati");
         }
 
         hackathon.setOrganizer(organizer);
         hackathon.addJudge(judge);
-        for (int i = 0; i < mentors.size(); i++) {
-            hackathon.addMentor(mentors.get(i));
+        for (Mentor mentor : mentors) {
+            hackathon.addMentor(mentor);
         }
 
         return hackathonRepository.save(hackathon);
@@ -79,6 +84,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Mentore non trovato con ID: " + mentorId));
 
+        ensureMentorCanStillBeAssigned(hackathon);
         hackathon.addMentor(mentor);
         hackathonRepository.save(hackathon);
     }
@@ -93,7 +99,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         hackathon.concludeWith(winningTeam);
         hackathonRepository.save(hackathon);
 
-        paymentGateway.payPrize(hackathon, winningTeam, hackathon.getPrizeMoney());
+        payPrizeAfterCommit(hackathon, winningTeam);
     }
 
     @Override
@@ -116,5 +122,31 @@ public class OrganizerServiceImpl implements IOrganizerService {
         // ha ancora ricaricato l'entita.
         hackathon.updateStatus();
         return hackathon;
+    }
+
+    private void ensureMentorCanStillBeAssigned(Hackathon hackathon) {
+        if (hackathon.getStatus() == HackathonStatus.EVALUATION
+                || hackathon.getStatus() == HackathonStatus.CONCLUDED) {
+            throw new InvalidHackathonStateException(
+                    hackathon.getId(),
+                    hackathon.getStatus(),
+                    HackathonStatus.REGISTRATION,
+                    HackathonStatus.RUNNING);
+        }
+    }
+
+    private void payPrizeAfterCommit(Hackathon hackathon, Team winningTeam) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            paymentGateway.payPrize(hackathon, winningTeam, hackathon.getPrizeMoney());
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        paymentGateway.payPrize(hackathon, winningTeam, hackathon.getPrizeMoney());
+                    }
+                });
     }
 }

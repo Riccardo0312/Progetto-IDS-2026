@@ -25,9 +25,9 @@ public class GuestServiceImpl implements IGuestService {
     }
 
     @Override
-    @Transactional
     public List<Hackathon> getAllHackathons() {
         List<Hackathon> hackathons = hackathonRepository.findAll();
+        hackathons.forEach(Hackathon::updateStatus);
         return hackathons;
     }
 
@@ -36,11 +36,13 @@ public class GuestServiceImpl implements IGuestService {
         if (status == null) {
             throw new IllegalArgumentException("Lo stato non può essere null");
         }
-        return hackathonRepository.findByStatus(status);
+        return hackathonRepository.findAll().stream()
+                .peek(Hackathon::updateStatus)
+                .filter(hackathon -> hackathon.getStatus() == status)
+                .toList();
     }
 
     @Override
-    @Transactional
     public Hackathon getHackathonById(Long hackathonId) {
         if (hackathonId == null) {
             throw new IllegalArgumentException("L'ID non può essere null");
@@ -49,7 +51,6 @@ public class GuestServiceImpl implements IGuestService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Hackathon non trovato con ID: " + hackathonId));
         hackathon.updateStatus();
-        hackathonRepository.save(hackathon);
         return hackathon;
     }
 

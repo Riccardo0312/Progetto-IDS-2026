@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import it.unicam.cs.ids.hackhub.model.state.hackathon.HackathonState;
 import it.unicam.cs.ids.hackhub.model.state.hackathon.HackathonStateFactory;
 import lombok.AccessLevel;
@@ -153,12 +154,9 @@ public class Hackathon {
 	}
 
 	public boolean allEvaluated() {
-		if (registrations.isEmpty()) {
-			return false;
-		}
-		for (int i = 0; i < registrations.size(); i++) {
-			if (registrations.get(i).getSubmission() == null ||
-					registrations.get(i).getSubmission().getEvaluation() == null) {
+		for (HackathonRegistration registration : registrations) {
+			if (registration.getSubmission() == null ||
+					registration.getSubmission().getEvaluation() == null) {
 				return false;
 			}
 		}
@@ -198,11 +196,29 @@ public class Hackathon {
 			throw new IllegalArgumentException("Il team vincitore non può essere null");
 		}
 		ensureWinnerProclamationAllowed();
+		if (!hasRegisteredTeam(winningTeam)) {
+			throw new IllegalArgumentException("Il team vincitore non è registrato all'hackathon");
+		}
 		if (!allEvaluated()) {
 			throw new IllegalStateException("Ci sono ancora sottomissioni non valutate");
 		}
 		this.winningTeam = winningTeam;
 		this.status = HackathonStatus.CONCLUDED;
+	}
+
+	private boolean hasRegisteredTeam(Team team) {
+		for (HackathonRegistration registration : registrations) {
+			Team registeredTeam = registration.getTeam();
+			if (registeredTeam == team) {
+				return true;
+			}
+			if (registeredTeam != null
+					&& registeredTeam.getId() != null
+					&& Objects.equals(registeredTeam.getId(), team.getId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private HackathonState getCurrentState() {
