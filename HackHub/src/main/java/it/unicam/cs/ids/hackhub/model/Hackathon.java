@@ -13,6 +13,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
@@ -111,6 +112,9 @@ public class Hackathon {
 	@OneToMany(mappedBy = "hackathon")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
+	@OneToOne(mappedBy = "hackathon", fetch = FetchType.LAZY)
+	private PrizeDisbursement prizeDisbursement;
+
 	public Hackathon(String name, String rules, String location,BigDecimal prizeMoney, int maxTeamSize, LocalDate registrationDeadline,LocalDate startDate , LocalDate endDate ) {
 
 		this.name = name;
@@ -185,11 +189,6 @@ public class Hackathon {
 
 	/**
 	 * Transizione esplicita verso lo stato {@code CONCLUDED}.
-	 *
-	 * <p>Centralizza nel modello le invarianti della proclamazione del vincitore:
-	 * stato corrente compatibile, presenza del vincitore e completezza delle
-	 * valutazioni. I service non devono toccare direttamente {@code status} ne
-	 * {@code winningTeam}.
 	 */
 	public void concludeWith(Team winningTeam) {
 		if (winningTeam == null) {
