@@ -15,6 +15,7 @@ import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
+import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
@@ -36,6 +37,7 @@ class TeamServiceTest {
     @Mock TeamMemberRepository teamMemberRepository;
     @Mock UserRepository userRepository;
     @Mock InvitationRepository invitationRepository;
+    @Mock HackathonRegistrationRepository hackathonRegistrationRepository;
 
     @InjectMocks TeamService teamService;
 
@@ -246,6 +248,7 @@ class TeamServiceTest {
         teamService.deleteTeam(10L, "leader@test.it");
 
         verify(invitationRepository).deleteByTeamId(10L);
+        verify(hackathonRegistrationRepository).deleteByTeamId(10L);
         verify(teamMemberRepository).deleteAll(team.getMembers());
         verify(teamRepository).delete(team);
     }
@@ -324,6 +327,7 @@ class TeamServiceTest {
         teamService.deleteTeam(10L, "leader@test.it");
 
         verify(invitationRepository).deleteByTeamId(10L);
+        verify(hackathonRegistrationRepository).deleteByTeamId(10L);
         verify(teamMemberRepository).deleteAll(team.getMembers());
         verify(teamRepository).delete(team);
     }

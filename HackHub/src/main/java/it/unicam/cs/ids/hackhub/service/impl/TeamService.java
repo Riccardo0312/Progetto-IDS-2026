@@ -6,6 +6,7 @@ import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
+import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
@@ -21,15 +22,18 @@ public class TeamService implements ITeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
+    private final HackathonRegistrationRepository hackathonRegistrationRepository;
 
     public TeamService(TeamRepository teamRepository,
                        TeamMemberRepository teamMemberRepository,
                        UserRepository userRepository,
-                       InvitationRepository invitationRepository) {
+                       InvitationRepository invitationRepository,
+                       HackathonRegistrationRepository hackathonRegistrationRepository) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
+        this.hackathonRegistrationRepository = hackathonRegistrationRepository;
     }
 
     @Override
@@ -100,6 +104,7 @@ public class TeamService implements ITeamService {
         }
 
         invitationRepository.deleteByTeamId(teamId);
+        hackathonRegistrationRepository.deleteByTeamId(teamId);
         teamMemberRepository.deleteAll(team.getMembers());
         teamRepository.delete(team);
     }
