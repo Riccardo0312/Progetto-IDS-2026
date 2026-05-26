@@ -89,7 +89,10 @@ public class TeamService implements ITeamService {
         }
 
         boolean hasBlockingRegistration = team.getRegistrations().stream()
-                .anyMatch(r -> r.getHackathon().getStatus() != HackathonStatus.REGISTRATION);
+                .anyMatch(r -> {
+                    r.getHackathon().updateStatus();
+                    return r.getHackathon().getStatus() != HackathonStatus.REGISTRATION;
+                });
         if (hasBlockingRegistration) {
             throw new IllegalStateException(
                     "Il team è iscritto a uno o più hackathon non in fase di iscrizione. "
