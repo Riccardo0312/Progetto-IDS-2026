@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
+import it.unicam.cs.ids.hackhub.dto.team.DeleteTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.team.LeaveTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.service.interfaces.ITeamService;
@@ -34,6 +35,13 @@ public class TeamController {
     public void leaveTeam(@PathVariable Long teamId,
                           @Valid @RequestBody LeaveTeamRequestDTO request) {
         teamService.leaveTeam(teamId, request.userEmail(), request.successorEmail());
+    }
+
+    @DeleteMapping("/{teamId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTeam(@PathVariable Long teamId,
+                           @Valid @RequestBody DeleteTeamRequestDTO request) {
+        teamService.deleteTeam(teamId, request.userEmail());
     }
 
     public record CreateTeamRequest(String name, String creatorEmail) {}

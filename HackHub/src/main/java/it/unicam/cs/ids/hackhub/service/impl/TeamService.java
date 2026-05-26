@@ -1,10 +1,12 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
+import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
@@ -18,13 +20,16 @@ public class TeamService implements ITeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
+    private final InvitationRepository invitationRepository;
 
     public TeamService(TeamRepository teamRepository,
                        TeamMemberRepository teamMemberRepository,
-                       UserRepository userRepository) {
+                       UserRepository userRepository,
+                       InvitationRepository invitationRepository) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
+        this.invitationRepository = invitationRepository;
     }
 
     @Override
@@ -68,6 +73,32 @@ public class TeamService implements ITeamService {
         } else {
             leaveAsMember(member, successorEmail);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteTeam(Long teamId, String leaderEmail) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+        User user = userRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+
+        if (!teamMemberRepository.existsByTeamIdAndUserIdAndRole(
+                teamId, user.getId(), TeamRole.LEADER)) {
+            throw new ForbiddenOperationException("Solo il leader può eliminare il team");
+        }
+
+        boolean hasBlockingRegistration = team.getRegistrations().stream()
+                .anyMatch(r -> r.getHackathon().getStatus() != HackathonStatus.REGISTRATION);
+        if (hasBlockingRegistration) {
+            throw new IllegalStateException(
+                    "Il team è iscritto a uno o più hackathon non in fase di iscrizione. "
+                    + "Impossibile eliminarlo.");
+        }
+
+        invitationRepository.deleteByTeamId(teamId);
+        teamMemberRepository.deleteAll(team.getMembers());
+        teamRepository.delete(team);
     }
 
     private void leaveAsLeader(Team team, TeamMember leader, String successorEmail) {

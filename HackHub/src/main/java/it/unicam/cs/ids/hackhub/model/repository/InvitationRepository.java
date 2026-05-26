@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
+    void deleteByTeamId(Long teamId);
 }
