@@ -1,7 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.mapper;
 
-import it.unicam.cs.ids.hackhub.dto.HackathonResponseDTO;
-import it.unicam.cs.ids.hackhub.dto.TeamSummaryDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.team.TeamSummaryDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.Team;
 import org.mapstruct.Mapper;

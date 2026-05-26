@@ -1,7 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.interfaces;
 
-import it.unicam.cs.ids.hackhub.dto.HackathonResponseDTO;
-import it.unicam.cs.ids.hackhub.dto.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.Team;
 import java.util.List;

@@ -1,6 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.mapper;
 
-import it.unicam.cs.ids.hackhub.dto.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
