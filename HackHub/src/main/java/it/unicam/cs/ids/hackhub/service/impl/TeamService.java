@@ -2,6 +2,7 @@ package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
+import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
@@ -17,7 +18,9 @@ public class TeamService implements ITeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
 
-    public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository, UserRepository userRepository) {
+    public TeamService(TeamRepository teamRepository,
+                       TeamMemberRepository teamMemberRepository,
+                       UserRepository userRepository) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
@@ -32,22 +35,18 @@ public class TeamService implements ITeamService {
         if (teamRepository.existsByNameIgnoreCase(name)) {
             throw new IllegalArgumentException("Esiste già un team con questo nome");
         }
-
         if (teamMemberRepository.existsByUserId(creator.getId())) {
             throw new IllegalArgumentException("L'utente appartiene già a un team");
         }
 
         Team team = new Team();
         team.setName(name);
-        team.setCreator(creator);
-
         Team savedTeam = teamRepository.save(team);
 
-        TeamMember member = new TeamMember();
-        member.setTeam(savedTeam);
-        member.setUser(creator);
-        TeamMember savedMember = teamMemberRepository.save(member);
-        savedTeam.getMembers().add(savedMember);
+        // Invariante: il creatore è il primo (e unico) LEADER del team.
+        TeamMember leader = new TeamMember(creator, savedTeam, TeamRole.LEADER);
+        TeamMember savedLeader = teamMemberRepository.save(leader);
+        savedTeam.getMembers().add(savedLeader);
 
         return savedTeam;
     }
