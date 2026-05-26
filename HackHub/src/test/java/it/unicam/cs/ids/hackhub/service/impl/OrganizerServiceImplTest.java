@@ -315,7 +315,7 @@ class OrganizerServiceImplTest {
 	}
 
 	private void applyStatus(Hackathon hackathon, HackathonStatus targetStatus) {
-		LocalDate today = LocalDate.of(2026, 5, 18);
+		LocalDate today = LocalDate.now();
 		switch (targetStatus) {
 			case REGISTRATION -> {
 				hackathon.setRegistrationDeadline(today.plusDays(5));

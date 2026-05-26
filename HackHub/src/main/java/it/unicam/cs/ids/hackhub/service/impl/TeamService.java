@@ -2,17 +2,21 @@ package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
+import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
+import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.ITeamService;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,17 +27,20 @@ public class TeamService implements ITeamService {
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
     private final HackathonRegistrationRepository hackathonRegistrationRepository;
+    private final SubmissionRepository submissionRepository;
 
     public TeamService(TeamRepository teamRepository,
                        TeamMemberRepository teamMemberRepository,
                        UserRepository userRepository,
                        InvitationRepository invitationRepository,
-                       HackathonRegistrationRepository hackathonRegistrationRepository) {
+                       HackathonRegistrationRepository hackathonRegistrationRepository,
+                       SubmissionRepository submissionRepository) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
         this.hackathonRegistrationRepository = hackathonRegistrationRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @Override
@@ -104,6 +111,11 @@ public class TeamService implements ITeamService {
         }
 
         invitationRepository.deleteByTeamId(teamId);
+        List<Submission> submissions = team.getRegistrations().stream()
+                .map(registration -> registration.getSubmission())
+                .filter(Objects::nonNull)
+                .toList();
+        submissionRepository.deleteAll(submissions);
         hackathonRegistrationRepository.deleteByTeamId(teamId);
         teamMemberRepository.deleteAll(team.getMembers());
         teamRepository.delete(team);
@@ -121,6 +133,10 @@ public class TeamService implements ITeamService {
 
         User successorUser = userRepository.findByEmail(successorEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Successore non trovato"));
+        if (Objects.equals(leader.getUser().getId(), successorUser.getId())) {
+            throw new IllegalArgumentException(
+                    "Il leader deve indicare un successore diverso da se stesso");
+        }
 
         TeamMember successor = teamMemberRepository
                 .findByTeamIdAndUserId(team.getId(), successorUser.getId())
@@ -138,6 +154,7 @@ public class TeamService implements ITeamService {
             throw new IllegalArgumentException(
                     "Solo il leader può indicare un successore");
         }
+        member.getTeam().getMembers().remove(member);
         teamMemberRepository.delete(member);
     }
 }

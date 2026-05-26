@@ -11,12 +11,14 @@ import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
+import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
 import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
+import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
@@ -38,6 +40,7 @@ class TeamServiceTest {
     @Mock UserRepository userRepository;
     @Mock InvitationRepository invitationRepository;
     @Mock HackathonRegistrationRepository hackathonRegistrationRepository;
+    @Mock SubmissionRepository submissionRepository;
 
     @InjectMocks TeamService teamService;
 
@@ -174,6 +177,20 @@ class TeamServiceTest {
                 .hasMessageContaining("non è membro del team");
     }
 
+    @Test
+    void leaveTeam_asLeader_throwsWhenLeaderIsSelectedAsSuccessor() {
+        team.getMembers().add(new TeamMember(
+                buildUser(2L, "member@test.it"), team, TeamRole.MEMBER));
+
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("leader@test.it")).thenReturn(Optional.of(creator));
+        when(teamMemberRepository.findByTeamIdAndUserId(10L, 1L)).thenReturn(Optional.of(leaderMember));
+
+        assertThatThrownBy(() -> teamService.leaveTeam(10L, "leader@test.it", "leader@test.it"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("successore diverso");
+    }
+
     // ---- leaveTeam (membro normale) ----
 
     @Test
@@ -181,6 +198,7 @@ class TeamServiceTest {
         User memberUser = buildUser(2L, "member@test.it");
         TeamMember memberMember = new TeamMember(memberUser, team, TeamRole.MEMBER);
         memberMember.setId(101L);
+        team.getMembers().add(memberMember);
 
         when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
         when(userRepository.findByEmail("member@test.it")).thenReturn(Optional.of(memberUser));
@@ -189,6 +207,7 @@ class TeamServiceTest {
         teamService.leaveTeam(10L, "member@test.it", null);
 
         verify(teamMemberRepository).delete(memberMember);
+        assertThat(team.getMembers()).doesNotContain(memberMember);
     }
 
     @Test
@@ -256,7 +275,10 @@ class TeamServiceTest {
     @Test
     void deleteTeam_succeedsWhenAllRegistrationsInRegistrationState() {
         Hackathon h = buildHackathon(HackathonStatus.REGISTRATION);
-        team.getRegistrations().add(buildRegistration(h));
+        HackathonRegistration registration = buildRegistration(h);
+        Submission submission = new Submission();
+        registration.setSubmission(submission);
+        team.getRegistrations().add(registration);
 
         when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
         when(userRepository.findByEmail("leader@test.it")).thenReturn(Optional.of(creator));
@@ -264,6 +286,8 @@ class TeamServiceTest {
 
         teamService.deleteTeam(10L, "leader@test.it");
 
+        verify(submissionRepository).deleteAll(List.of(submission));
+        verify(hackathonRegistrationRepository).deleteByTeamId(10L);
         verify(teamRepository).delete(team);
     }
 
@@ -332,6 +356,15 @@ class TeamServiceTest {
         verify(teamRepository).delete(team);
     }
 
+    @Test
+    void memberWithoutPersistedRoleIsTreatedAsRegularMember() {
+        TeamMember legacyMember = new TeamMember();
+        legacyMember.setRole(null);
+
+        assertThat(legacyMember.isMember()).isTrue();
+        assertThat(legacyMember.isLeader()).isFalse();
+    }
+
     // ---- helpers ----
 
     private User buildUser(Long id, String email) {
@@ -346,7 +379,7 @@ class TeamServiceTest {
     private Hackathon buildHackathon(HackathonStatus status) {
         Hackathon h = new Hackathon();
         h.setId(200L);
-        java.time.LocalDate today = java.time.LocalDate.of(2026, 5, 26);
+        java.time.LocalDate today = java.time.LocalDate.now();
         switch (status) {
             case REGISTRATION -> {
                 h.setRegistrationDeadline(today.plusDays(5));

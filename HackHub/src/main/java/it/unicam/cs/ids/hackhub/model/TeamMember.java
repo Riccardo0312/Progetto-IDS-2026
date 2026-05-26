@@ -39,10 +39,9 @@ public class TeamMember {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	/** Ruolo nel team. Default {@code MEMBER}. */
-	@NotNull
+	/** Ruolo nel team. I record precedenti al campo sono interpretati come {@code MEMBER}. */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "role", nullable = false, length = 20)
+	@Column(name = "role", length = 20)
 	private TeamRole role = TeamRole.MEMBER;
 
 	/** Costruttore di dominio: associa user, team e ruolo in modo esplicito. */
@@ -59,7 +58,7 @@ public class TeamMember {
 
 	/** {@code true} se il membro è un membro standard. */
 	public boolean isMember() {
-		return role == TeamRole.MEMBER;
+		return role == null || role == TeamRole.MEMBER;
 	}
 
 	/** Promuove a leader. Usare solo via {@link Team#promoteToLeader}. */
