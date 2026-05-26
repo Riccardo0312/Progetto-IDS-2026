@@ -1,7 +1,7 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
-import it.unicam.cs.ids.hackhub.dto.HackathonResponseDTO;
-import it.unicam.cs.ids.hackhub.dto.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;

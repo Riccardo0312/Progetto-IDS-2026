@@ -1,7 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
-import it.unicam.cs.ids.hackhub.dto.HackathonResponseDTO;
-import it.unicam.cs.ids.hackhub.dto.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;

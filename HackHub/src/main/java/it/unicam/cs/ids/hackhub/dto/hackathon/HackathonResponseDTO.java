@@ -1,5 +1,6 @@
-package it.unicam.cs.ids.hackhub.dto;
+package it.unicam.cs.ids.hackhub.dto.hackathon;
 
+import it.unicam.cs.ids.hackhub.dto.team.TeamSummaryDTO;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import java.math.BigDecimal;
 

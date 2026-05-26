@@ -1,4 +1,4 @@
-package it.unicam.cs.ids.hackhub.dto;
+package it.unicam.cs.ids.hackhub.dto.prize;
 
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
 import java.math.BigDecimal;
