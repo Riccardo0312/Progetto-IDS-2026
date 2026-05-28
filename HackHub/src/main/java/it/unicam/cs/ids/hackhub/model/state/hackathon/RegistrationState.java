@@ -17,31 +17,27 @@ public final class RegistrationState implements HackathonState {
 			LocalDate startDate, LocalDate endDate) {
 		Objects.requireNonNull(currentDate, "La data corrente non può essere null");
 
-		if (registrationDeadline == null || !currentDate.isAfter(registrationDeadline)) {
-			return HackathonStatus.REGISTRATION;
-		}
-
-		// Shortcut: se anche endDate è già passata, salta direttamente a EVALUATION.
-		// Difensivo per il caso in cui updateStatus non venga chiamata regolarmente.
+		// Shortcut difensivo: se siamo già oltre endDate, salta direttamente a
+		// EVALUATION. Utile se updateStatus non viene chiamata regolarmente.
 		if (endDate != null && currentDate.isAfter(endDate)) {
 			return HackathonStatus.EVALUATION;
 		}
 
-		// Shortcut: se startDate è già stata raggiunta, salta direttamente a RUNNING.
+		// La transizione automatica avviene su startDate, non su
+		// registrationDeadline. RUNNING significa "evento in corso".
+		// Le iscrizioni sono "chiuse" durante REGISTRATION dopo
+		// registrationDeadline ma e una sotto-fase, non uno stato proprio:
+		// e gestita dal check applicativo Hackathon.ensureNewRegistrationsAllowed.
+		// Vedi ADR 0003.
 		if (startDate != null && !currentDate.isBefore(startDate)) {
 			return HackathonStatus.RUNNING;
 		}
 
-		return HackathonStatus.READY;
+		return HackathonStatus.REGISTRATION;
 	}
 
 	@Override
 	public void ensureCancellationAllowed(Long hackathonId) {
-		// Permesso.
-	}
-
-	@Override
-	public void ensureModificationAllowed(Long hackathonId) {
 		// Permesso.
 	}
 

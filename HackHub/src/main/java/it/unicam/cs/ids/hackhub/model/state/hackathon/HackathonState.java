@@ -10,9 +10,14 @@ import java.time.LocalDate;
  * <p>Sealed: l'insieme degli stati e chiuso ed esaustivo. Aggiungere uno stato
  * richiede di aggiornare {@link HackathonStateFactory}, {@link HackathonStatus}
  * e questa lista di permits in modo coordinato.
+ *
+ * <p>Vedi ADR 0003: il ciclo di vita prescritto dalla specifica del progetto e
+ * di 4 stati (REGISTRATION, RUNNING, EVALUATION, CONCLUDED). {@code CANCELLED}
+ * e uno stato terminale fuori ciclo, raggiungibile solo come eccezione
+ * (annullamento prima dell'inizio).
  */
 public sealed interface HackathonState
-		permits RegistrationState, ReadyState, RunningState,
+		permits RegistrationState, RunningState,
 				EvaluationState, ConcludedState, CancelledState {
 
 	HackathonStatus getStatus();
@@ -39,20 +44,10 @@ public sealed interface HackathonState
 	}
 
 	/**
-	 * Default-deny: solo {@link RegistrationState} e {@link ReadyState} permettono
-	 * l'annullamento (vedi ADR 0001).
+	 * Default-deny: solo {@link RegistrationState} permette l'annullamento
+	 * (vedi ADR 0003).
 	 */
 	default void ensureCancellationAllowed(Long hackathonId) {
-		throw new InvalidHackathonStateException(
-				hackathonId, getStatus(),
-				HackathonStatus.REGISTRATION, HackathonStatus.READY);
-	}
-
-	/**
-	 * Default-deny: solo {@link RegistrationState} permette la modifica dei
-	 * parametri (vedi ADR 0001).
-	 */
-	default void ensureModificationAllowed(Long hackathonId) {
 		throw new InvalidHackathonStateException(
 				hackathonId, getStatus(), HackathonStatus.REGISTRATION);
 	}
