@@ -12,12 +12,14 @@ import java.time.LocalDate;
  * e questa lista di permits in modo coordinato.
  */
 public sealed interface HackathonState
-		permits RegistrationState, RunningState, EvaluationState, ConcludedState {
+		permits RegistrationState, ReadyState, RunningState,
+				EvaluationState, ConcludedState, CancelledState {
 
 	HackathonStatus getStatus();
 
 	default HackathonStatus updateStatus(
-			LocalDate currentDate, LocalDate registrationDeadline, LocalDate endDate) {
+			LocalDate currentDate, LocalDate registrationDeadline,
+			LocalDate startDate, LocalDate endDate) {
 		return getStatus();
 	}
 
@@ -34,6 +36,25 @@ public sealed interface HackathonState
 	default void ensureWinnerProclamationAllowed(Long hackathonId) {
 		throw new InvalidHackathonStateException(
 				hackathonId, getStatus(), HackathonStatus.EVALUATION);
+	}
+
+	/**
+	 * Default-deny: solo {@link RegistrationState} e {@link ReadyState} permettono
+	 * l'annullamento (vedi ADR 0001).
+	 */
+	default void ensureCancellationAllowed(Long hackathonId) {
+		throw new InvalidHackathonStateException(
+				hackathonId, getStatus(),
+				HackathonStatus.REGISTRATION, HackathonStatus.READY);
+	}
+
+	/**
+	 * Default-deny: solo {@link RegistrationState} permette la modifica dei
+	 * parametri (vedi ADR 0001).
+	 */
+	default void ensureModificationAllowed(Long hackathonId) {
+		throw new InvalidHackathonStateException(
+				hackathonId, getStatus(), HackathonStatus.REGISTRATION);
 	}
 
 }

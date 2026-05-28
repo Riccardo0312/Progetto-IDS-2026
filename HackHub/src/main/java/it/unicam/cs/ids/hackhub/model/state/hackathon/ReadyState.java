@@ -4,11 +4,15 @@ import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public final class RegistrationState implements HackathonState {
+/**
+ * Stato "In attesa di inizio": le iscrizioni sono chiuse ma l'hackathon non è
+ * ancora iniziato. Vedi ADR 0001 per la motivazione.
+ */
+public final class ReadyState implements HackathonState {
 
 	@Override
 	public HackathonStatus getStatus() {
-		return HackathonStatus.REGISTRATION;
+		return HackathonStatus.READY;
 	}
 
 	@Override
@@ -17,17 +21,11 @@ public final class RegistrationState implements HackathonState {
 			LocalDate startDate, LocalDate endDate) {
 		Objects.requireNonNull(currentDate, "La data corrente non può essere null");
 
-		if (registrationDeadline == null || !currentDate.isAfter(registrationDeadline)) {
-			return HackathonStatus.REGISTRATION;
-		}
-
-		// Shortcut: se anche endDate è già passata, salta direttamente a EVALUATION.
-		// Difensivo per il caso in cui updateStatus non venga chiamata regolarmente.
+		// Shortcut difensivo: se siamo già oltre endDate, salta direttamente a EVALUATION.
 		if (endDate != null && currentDate.isAfter(endDate)) {
 			return HackathonStatus.EVALUATION;
 		}
 
-		// Shortcut: se startDate è già stata raggiunta, salta direttamente a RUNNING.
 		if (startDate != null && !currentDate.isBefore(startDate)) {
 			return HackathonStatus.RUNNING;
 		}
@@ -37,11 +35,6 @@ public final class RegistrationState implements HackathonState {
 
 	@Override
 	public void ensureCancellationAllowed(Long hackathonId) {
-		// Permesso.
-	}
-
-	@Override
-	public void ensureModificationAllowed(Long hackathonId) {
 		// Permesso.
 	}
 

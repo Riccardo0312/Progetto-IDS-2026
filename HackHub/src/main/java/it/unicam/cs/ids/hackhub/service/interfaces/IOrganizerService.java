@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.interfaces;
 
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
@@ -17,6 +18,35 @@ public interface IOrganizerService {
 	void removeMentorFromHackathon(Long hackathonId, Long organizerId, Long mentorId);
 
 	void addJudgeToHackathon(Long hackathonId, Long organizerId, Long judgeId);
+
+	/**
+	 * Sostituisce atomicamente il giudice di un hackathon. Vedi ADR 0002.
+	 *
+	 * <p>Permesso solo finché lo staff è ancora modificabile (REGISTRATION,
+	 * READY, RUNNING). Mantiene l'invariante "esattamente un giudice" senza
+	 * mai passare per uno stato intermedio "senza giudice".
+	 */
+	void replaceJudge(Long hackathonId, Long organizerId, Long newJudgeId);
+
+	/**
+	 * Annulla l'hackathon prima dell'inizio. Vedi ADR 0001.
+	 *
+	 * <p>Permesso solo in {@code REGISTRATION} o {@code READY}; le registrazioni
+	 * dei team già iscritti vengono preservate (l'hackathon resta visibile come
+	 * "annullato").
+	 */
+	void cancelHackathon(Long hackathonId, Long organizerId);
+
+	/**
+	 * Modifica i parametri descrittivi/logistici dell'hackathon (nome, regole,
+	 * luogo, premio, dimensione massima del team, date). Vedi ADR 0001 e
+	 * CONTEXT "Modifica dell'hackathon".
+	 *
+	 * <p>Permesso solo in {@code REGISTRATION}; staff (giudice, mentori) si
+	 * cambia tramite gli use case dedicati, non con questa operazione.
+	 */
+	void updateHackathon(Long hackathonId, Long organizerId,
+	                     UpdateHackathonRequestDTO request);
 
 	List<StaffMemberSummaryDTO> getAvailableMentors();
 

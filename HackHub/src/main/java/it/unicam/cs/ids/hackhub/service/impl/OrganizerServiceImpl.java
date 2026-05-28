@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
@@ -27,6 +28,7 @@ import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
 import it.unicam.cs.ids.hackhub.service.interfaces.IPaymentGateway;
 import it.unicam.cs.ids.hackhub.service.mapper.HackathonMapper;
 import it.unicam.cs.ids.hackhub.service.mapper.PrizeDisbursementMapper;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -228,6 +230,65 @@ public class OrganizerServiceImpl implements IOrganizerService {
         hackathonRepository.save(hackathon);
     }
 
+    @Override
+    @Transactional
+    public void replaceJudge(Long hackathonId, Long organizerId, Long newJudgeId) {
+        if (newJudgeId == null) {
+            throw new IllegalArgumentException("L'ID del nuovo giudice non può essere null");
+        }
+        Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        ensureStaffCanStillBeAssigned(hackathon);
+
+        Judge currentJudge = hackathon.getJudge();
+        if (currentJudge != null && Objects.equals(currentJudge.getId(), newJudgeId)) {
+            throw new IllegalArgumentException(
+                    "Il giudice " + newJudgeId + " è già assegnato all'hackathon " + hackathonId);
+        }
+
+        Judge newJudge = judgeRepository.findById(newJudgeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Judge", newJudgeId));
+
+        if (currentJudge != null) {
+            hackathon.removeJudge();
+        }
+        hackathon.addJudge(newJudge);
+        hackathonRepository.save(hackathon);
+    }
+
+    @Override
+    @Transactional
+    public void cancelHackathon(Long hackathonId, Long organizerId) {
+        Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+
+        hackathon.cancel();
+        hackathonRepository.save(hackathon);
+    }
+
+    @Override
+    @Transactional
+    public void updateHackathon(
+            Long hackathonId, Long organizerId, UpdateHackathonRequestDTO request) {
+        if (request == null) {
+            throw new IllegalArgumentException("La richiesta di modifica non può essere null");
+        }
+        Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+
+        hackathon.update(
+                request.name(),
+                request.rules(),
+                request.location(),
+                request.prizeMoney(),
+                request.maxTeamSize(),
+                request.registrationDeadline(),
+                request.startDate(),
+                request.endDate(),
+                LocalDate.now());
+        hackathonRepository.save(hackathon);
+    }
+
 
     @Override
     public List<StaffMemberSummaryDTO> getAvailableMentors() {
@@ -269,12 +330,15 @@ public class OrganizerServiceImpl implements IOrganizerService {
     }
 
     private void ensureStaffCanStillBeAssigned(Hackathon hackathon) {
-        if (hackathon.getStatus() == HackathonStatus.EVALUATION
-                || hackathon.getStatus() == HackathonStatus.CONCLUDED) {
+        HackathonStatus status = hackathon.getStatus();
+        if (status != HackathonStatus.REGISTRATION
+                && status != HackathonStatus.READY
+                && status != HackathonStatus.RUNNING) {
             throw new InvalidHackathonStateException(
                     hackathon.getId(),
-                    hackathon.getStatus(),
+                    status,
                     HackathonStatus.REGISTRATION,
+                    HackathonStatus.READY,
                     HackathonStatus.RUNNING);
         }
     }

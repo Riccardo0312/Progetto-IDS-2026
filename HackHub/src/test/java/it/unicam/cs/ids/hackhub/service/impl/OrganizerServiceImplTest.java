@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
@@ -421,6 +422,375 @@ class OrganizerServiceImplTest {
 				new StaffMemberSummaryDTO(JUDGE_ID, "Grace Judge", "grace@example.test"));
 	}
 
+	// ---- replaceJudge ----
+
+	@Test
+	void replaceJudgeSwapsCurrentJudgeAtomically() {
+		Judge oldJudge = judgeWithId(JUDGE_ID);
+		Judge newJudge = judgeWithId(JUDGE_ID + 1);
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(oldJudge);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(judgeRepository.findById(JUDGE_ID + 1)).thenReturn(Optional.of(newJudge));
+
+		organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1);
+
+		assertThat(hackathon.getJudge()).isSameAs(newJudge);
+		verify(hackathonRepository).save(hackathon);
+	}
+
+	@Test
+	void replaceJudgeWorksInReady() {
+		Judge oldJudge = judgeWithId(JUDGE_ID);
+		Judge newJudge = judgeWithId(JUDGE_ID + 1);
+		Hackathon hackathon = createHackathon(HackathonStatus.READY);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(oldJudge);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(judgeRepository.findById(JUDGE_ID + 1)).thenReturn(Optional.of(newJudge));
+
+		organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1);
+
+		assertThat(hackathon.getJudge()).isSameAs(newJudge);
+	}
+
+	@Test
+	void replaceJudgeWorksInRunning() {
+		Judge oldJudge = judgeWithId(JUDGE_ID);
+		Judge newJudge = judgeWithId(JUDGE_ID + 1);
+		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(oldJudge);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(judgeRepository.findById(JUDGE_ID + 1)).thenReturn(Optional.of(newJudge));
+
+		organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1);
+
+		assertThat(hackathon.getJudge()).isSameAs(newJudge);
+	}
+
+	@Test
+	void replaceJudgeRejectedInEvaluation() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1))
+				.isInstanceOf(InvalidHackathonStateException.class);
+
+		verify(judgeRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void replaceJudgeRejectedInCancelled() {
+		Hackathon hackathon = createHackathon(HackathonStatus.CANCELLED);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1))
+				.isInstanceOf(InvalidHackathonStateException.class);
+	}
+
+	@Test
+	void replaceJudgeRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(judgeWithId(JUDGE_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.replaceJudge(
+								HACKATHON_ID, WRONG_ORGANIZER_ID, JUDGE_ID + 1))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(judgeRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void replaceJudgeRejectsNonExistentJudge() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(judgeWithId(JUDGE_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(judgeRepository.findById(JUDGE_ID + 1)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() ->
+						organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1))
+				.isInstanceOf(ResourceNotFoundException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void replaceJudgeRejectsSameJudge() {
+		Judge judge = judgeWithId(JUDGE_ID);
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addJudge(judge);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID))
+				.isInstanceOf(IllegalArgumentException.class);
+
+		verify(judgeRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	// ---- cancelHackathon ----
+
+	@Test
+	void cancelHackathonInRegistrationSetsStatusCancelled() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID);
+
+		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.CANCELLED);
+		verify(hackathonRepository).save(hackathon);
+	}
+
+	@Test
+	void cancelHackathonInReadySetsStatusCancelled() {
+		Hackathon hackathon = createHackathon(HackathonStatus.READY);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID);
+
+		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.CANCELLED);
+		verify(hackathonRepository).save(hackathon);
+	}
+
+	@Test
+	void cancelHackathonRejectsRunning() {
+		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() -> organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID))
+				.isInstanceOf(InvalidHackathonStateException.class);
+
+		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.RUNNING);
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void cancelHackathonRejectsEvaluation() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() -> organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID))
+				.isInstanceOf(InvalidHackathonStateException.class);
+	}
+
+	@Test
+	void cancelHackathonRejectsAlreadyCancelled() {
+		Hackathon hackathon = createHackathon(HackathonStatus.CANCELLED);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() -> organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID))
+				.isInstanceOf(InvalidHackathonStateException.class);
+	}
+
+	@Test
+	void cancelHackathonRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.cancelHackathon(HACKATHON_ID, WRONG_ORGANIZER_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.REGISTRATION);
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void cancelHackathonPreservesExistingRegistrations() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		int registrationsBefore = hackathon.getRegistrations().size();
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID);
+
+		assertThat(hackathon.getRegistrations()).hasSize(registrationsBefore);
+	}
+
+	// ---- updateHackathon ----
+
+	@Test
+	void updateHackathonInRegistrationAppliesAllFields() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"New name", "New rules", "New location",
+				BigDecimal.valueOf(7777), 8,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request);
+
+		assertThat(hackathon.getName()).isEqualTo("New name");
+		assertThat(hackathon.getRules()).isEqualTo("New rules");
+		assertThat(hackathon.getLocation()).isEqualTo("New location");
+		assertThat(hackathon.getPrizeMoney()).isEqualByComparingTo(BigDecimal.valueOf(7777));
+		assertThat(hackathon.getMaxTeamSize()).isEqualTo(8);
+		verify(hackathonRepository).save(hackathon);
+	}
+
+	@Test
+	void updateHackathonRejectsReady() {
+		Hackathon hackathon = createHackathon(HackathonStatus.READY);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(InvalidHackathonStateException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void updateHackathonRejectsRunning() {
+		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(InvalidHackathonStateException.class);
+	}
+
+	@Test
+	void updateHackathonRejectsCancelled() {
+		Hackathon hackathon = createHackathon(HackathonStatus.CANCELLED);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(InvalidHackathonStateException.class);
+	}
+
+	@Test
+	void updateHackathonRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, WRONG_ORGANIZER_ID, request))
+				.isInstanceOf(ForbiddenOperationException.class);
+	}
+
+	@Test
+	void updateHackathonRejectsInvalidDateOrdering() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		// startDate before registrationDeadline
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(15), today.plusDays(10), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void updateHackathonRejectsRegistrationDeadlineInPast() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.minusDays(1), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void updateHackathonRejectsReducedMaxTeamSizeBelowExisting() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.setMaxTeamSize(5);
+		// Forza un team con 4 membri nella registrazione gia esistente
+		Team team = hackathon.getRegistrations().getFirst().getTeam();
+		java.util.List<it.unicam.cs.ids.hackhub.model.TeamMember> members = new java.util.ArrayList<>();
+		for (int i = 0; i < 4; i++) {
+			members.add(new it.unicam.cs.ids.hackhub.model.TeamMember());
+		}
+		team.setMembers(members);
+		LocalDate today = LocalDate.now();
+		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
+				"x", "x", "x", BigDecimal.ONE, 3,
+				today.plusDays(10), today.plusDays(15), today.plusDays(20));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
+				.isInstanceOf(IllegalStateException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
 	// ---- helpers ----
 
 	private Hackathon createConcludedHackathon() {
@@ -474,18 +844,34 @@ class OrganizerServiceImplTest {
 		switch (targetStatus) {
 			case REGISTRATION -> {
 				hackathon.setRegistrationDeadline(today.plusDays(5));
+				hackathon.setStartDate(today.plusDays(7));
 				hackathon.setEndDate(today.plusDays(15));
 				hackathon.updateStatus(today);
 			}
-			case RUNNING -> {
+			case READY -> {
 				hackathon.setRegistrationDeadline(today.minusDays(2));
+				hackathon.setStartDate(today.plusDays(3));
+				hackathon.setEndDate(today.plusDays(10));
+				hackathon.updateStatus(today);
+			}
+			case RUNNING -> {
+				hackathon.setRegistrationDeadline(today.minusDays(5));
+				hackathon.setStartDate(today.minusDays(2));
 				hackathon.setEndDate(today.plusDays(5));
 				hackathon.updateStatus(today);
 			}
 			case EVALUATION -> {
 				hackathon.setRegistrationDeadline(today.minusDays(10));
+				hackathon.setStartDate(today.minusDays(7));
 				hackathon.setEndDate(today.minusDays(2));
 				hackathon.updateStatus(today);
+			}
+			case CANCELLED -> {
+				hackathon.setRegistrationDeadline(today.plusDays(5));
+				hackathon.setStartDate(today.plusDays(7));
+				hackathon.setEndDate(today.plusDays(15));
+				hackathon.updateStatus(today);
+				hackathon.cancel();
 			}
 			case CONCLUDED -> throw new IllegalArgumentException(
 					"CONCLUDED non è raggiungibile via updateStatus: usare concludeWith(team)");

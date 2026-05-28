@@ -13,7 +13,8 @@ public final class RunningState implements HackathonState {
 
 	@Override
 	public HackathonStatus updateStatus(
-			LocalDate currentDate, LocalDate registrationDeadline, LocalDate endDate) {
+			LocalDate currentDate, LocalDate registrationDeadline,
+			LocalDate startDate, LocalDate endDate) {
 		Objects.requireNonNull(currentDate, "La data corrente non può essere null");
 
 		if (endDate != null && currentDate.isAfter(endDate)) {

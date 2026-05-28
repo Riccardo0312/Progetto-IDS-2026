@@ -15,9 +15,11 @@ import java.util.Objects;
 public final class HackathonStateFactory {
 
 	private static final HackathonState REGISTRATION = new RegistrationState();
+	private static final HackathonState READY = new ReadyState();
 	private static final HackathonState RUNNING = new RunningState();
 	private static final HackathonState EVALUATION = new EvaluationState();
 	private static final HackathonState CONCLUDED = new ConcludedState();
+	private static final HackathonState CANCELLED = new CancelledState();
 
 	private HackathonStateFactory() {
 	}
@@ -27,9 +29,11 @@ public final class HackathonStateFactory {
 
 		return switch (status) {
 			case REGISTRATION -> REGISTRATION;
+			case READY -> READY;
 			case RUNNING -> RUNNING;
 			case EVALUATION -> EVALUATION;
 			case CONCLUDED -> CONCLUDED;
+			case CANCELLED -> CANCELLED;
 		};
 	}
 

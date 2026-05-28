@@ -209,6 +209,15 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <parameters>true</parameters>
+                    <!--
+                        fork=true necessario per evitare un bug di interazione
+                        in-process tra MapStruct annotation processor e javac
+                        (Java 21) che genera HackathonMapperImpl/PrizeDisbursementMapperImpl
+                        con bytecode InconsistentHierarchy (la classe non implementa
+                        davvero l'interfaccia, vedi javap interfaces:0). Con fork=true
+                        javac gira in un processo separato e produce bytecode corretto.
+                    -->
+                    <fork>true</fork>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
