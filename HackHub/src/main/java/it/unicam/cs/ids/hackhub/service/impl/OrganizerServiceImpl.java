@@ -67,7 +67,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
     @Override
     @Transactional
     public Hackathon createHackathon(Hackathon hackathon, Long organizerId,
-            Long judgeId, List<Long> mentorIds) {
+                                     Long judgeId, List<Long> mentorIds) {
         if (hackathon == null) {
             throw new IllegalArgumentException("L'hackathon non può essere null");
         }
@@ -188,6 +188,50 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "PrizeDisbursement", hackathonId));
         return prizeDisbursementMapper.toResponse(disbursement);
+    }
+
+
+    @Override
+    @Transactional
+    public void removeMentorFromHackathon(Long hackathonId, Long mentorId) {
+        Hackathon hackathon = findHackathonById(hackathonId);
+        Mentor mentor = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Mentore non trovato con ID: " + mentorId));
+        hackathon.removeMentor(mentor);
+        hackathonRepository.save(hackathon);
+    }
+
+    @Override
+    @Transactional
+    public void addJudgeToHackathon(Long hackathonId, Long judgeId) {
+        Hackathon hackathon = findHackathonById(hackathonId);
+        if (hackathon.getJudge() != null) {
+            throw new IllegalStateException(
+                    "L'hackathon ha già un giudice assegnato. Rimuovilo prima di aggiungerne uno nuovo.");
+        }
+        Judge judge = judgeRepository.findById(judgeId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Giudice non trovato con ID: " + judgeId));
+        hackathon.addJudge(judge);
+        hackathonRepository.save(hackathon);
+    }
+
+
+    @Override
+    public List<Mentor> getAvailableMentors() {
+        return mentorRepository.findAll();
+    }
+
+    @Override
+    public List<Judge> getAvailableJudges() {
+        return judgeRepository.findAll();
+    }
+
+    @Override
+    public List<Mentor> getMentorsByHackathon(Long hackathonId) {
+        Hackathon hackathon = findHackathonById(hackathonId);
+        return hackathon.getMentors();
     }
 
     private boolean isAlreadyDisbursed(Long hackathonId) {

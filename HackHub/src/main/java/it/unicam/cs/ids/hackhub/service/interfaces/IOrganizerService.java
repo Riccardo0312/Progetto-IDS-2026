@@ -3,6 +3,8 @@ package it.unicam.cs.ids.hackhub.service.interfaces;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
+import it.unicam.cs.ids.hackhub.model.Judge;
+import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.Team;
 import java.util.List;
 
@@ -12,6 +14,18 @@ public interface IOrganizerService {
 	                          Long judgeId, List<Long> mentorIds);
 
 	void addMentorToHackathon(Long hackathonId, Long mentorId);
+
+	void removeMentorFromHackathon(Long hackathonId, Long mentorId);
+
+	void addJudgeToHackathon(Long hackathonId, Long judgeId);
+
+	List<Mentor> getAvailableMentors();
+
+	List<Judge> getAvailableJudges();
+
+	List<Mentor> getMentorsByHackathon(Long hackathonId);
+
+
 
 	void proclaimWinner(Long hackathonId, Team winningTeam);
 

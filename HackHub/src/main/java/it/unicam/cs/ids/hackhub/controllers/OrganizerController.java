@@ -4,6 +4,7 @@ import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
 import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,4 +48,47 @@ public class OrganizerController {
 			@PathVariable Long organizerId, @PathVariable Long hackathonId) {
 		return organizerService.getPrizeDisbursement(hackathonId, organizerId);
 	}
+
+	@PostMapping("/hackathons/{hackathonId}/mentors/{mentorId}")
+	public void addMentor(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long mentorId) {
+		organizerService.addMentorToHackathon(hackathonId, mentorId);
+	}
+
+	@DeleteMapping("/hackathons/{hackathonId}/mentors/{mentorId}")
+	public void removeMentor(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long mentorId) {
+		organizerService.removeMentorFromHackathon(hackathonId, mentorId);
+	}
+
+	@PostMapping("/hackathons/{hackathonId}/judge/{judgeId}")
+	public void addJudge(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long judgeId) {
+		organizerService.addJudgeToHackathon(hackathonId, judgeId);
+	}
+
+
+	@GetMapping("/mentors/available")
+	public List<?> getAvailableMentors(@PathVariable Long organizerId) {
+		return organizerService.getAvailableMentors();
+	}
+
+	@GetMapping("/judges/available")
+	public List<?> getAvailableJudges(@PathVariable Long organizerId) {
+		return organizerService.getAvailableJudges();
+	}
+
+	@GetMapping("/hackathons/{hackathonId}/mentors")
+	public List<?> getMentorsByHackathon(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId) {
+		return organizerService.getMentorsByHackathon(hackathonId);
+	}
+
 }
