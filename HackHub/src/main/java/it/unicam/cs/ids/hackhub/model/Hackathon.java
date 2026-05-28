@@ -172,7 +172,8 @@ public class Hackathon {
 	}
 
 	public void updateStatus(LocalDate currentDate) {
-		this.status = getCurrentState().updateStatus(currentDate, registrationDeadline, endDate);
+		this.status = getCurrentState().updateStatus(
+				currentDate, registrationDeadline, startDate, endDate);
 	}
 
 	public void ensureMentorActionsAllowed() {
@@ -185,6 +186,14 @@ public class Hackathon {
 
 	public void ensureWinnerProclamationAllowed() {
 		getCurrentState().ensureWinnerProclamationAllowed(id);
+	}
+
+	public void ensureCancellationAllowed() {
+		getCurrentState().ensureCancellationAllowed(id);
+	}
+
+	public void ensureModificationAllowed() {
+		getCurrentState().ensureModificationAllowed(id);
 	}
 
 	/**
@@ -203,6 +212,108 @@ public class Hackathon {
 		}
 		this.winningTeam = winningTeam;
 		this.status = HackathonStatus.CONCLUDED;
+	}
+
+	/**
+	 * Transizione esplicita verso lo stato {@code CANCELLED}. Vedi ADR 0001.
+	 *
+	 * <p>Permesso solo da {@code REGISTRATION} o {@code READY}; le registrazioni
+	 * dei team già iscritti vengono preservate, l'hackathon resta visibile come
+	 * "annullato" per audit.
+	 */
+	public void cancel() {
+		ensureCancellationAllowed();
+		this.status = HackathonStatus.CANCELLED;
+	}
+
+	/**
+	 * Modifica i parametri descrittivi e logistici dell'hackathon. Vedi ADR 0001
+	 * e CONTEXT "Modifica dell'hackathon".
+	 *
+	 * <p>Permesso solo da {@code REGISTRATION}. Valida gli invarianti di dominio
+	 * e rifiuta la modifica se le nuove date farebbero transitare lo stato in
+	 * {@code READY}/{@code RUNNING}/{@code EVALUATION} immediatamente dopo
+	 * l'applicazione (defense-in-depth).
+	 *
+	 * @param currentDate data di riferimento per il controllo di transizione
+	 */
+	public void update(
+			String name, String rules, String location, BigDecimal prizeMoney,
+			int maxTeamSize, LocalDate registrationDeadline, LocalDate startDate,
+			LocalDate endDate, LocalDate currentDate) {
+		ensureModificationAllowed();
+		validateUpdateInputs(prizeMoney, maxTeamSize,
+				registrationDeadline, startDate, endDate, currentDate);
+		ensureMaxTeamSizeAccommodatesExistingTeams(maxTeamSize);
+		ensureUpdateKeepsRegistrationState(
+				currentDate, registrationDeadline, startDate, endDate);
+
+		this.name = name;
+		this.rules = rules;
+		this.location = location;
+		this.prizeMoney = prizeMoney;
+		this.maxTeamSize = maxTeamSize;
+		this.registrationDeadline = registrationDeadline;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	private void validateUpdateInputs(
+			BigDecimal prizeMoney, int maxTeamSize,
+			LocalDate registrationDeadline, LocalDate startDate,
+			LocalDate endDate, LocalDate currentDate) {
+		if (registrationDeadline == null || startDate == null
+				|| endDate == null || currentDate == null) {
+			throw new IllegalArgumentException("Le date non possono essere null");
+		}
+		if (prizeMoney == null || prizeMoney.signum() < 0) {
+			throw new IllegalArgumentException("Il premio in denaro non può essere negativo");
+		}
+		if (maxTeamSize <= 0) {
+			throw new IllegalArgumentException("La dimensione massima del team deve essere positiva");
+		}
+		if (registrationDeadline.isBefore(currentDate)) {
+			throw new IllegalArgumentException(
+					"La scadenza iscrizioni non può essere nel passato");
+		}
+		if (startDate.isBefore(registrationDeadline)) {
+			throw new IllegalArgumentException(
+					"La data di inizio deve essere successiva alla scadenza iscrizioni");
+		}
+		if (endDate.isBefore(startDate)) {
+			throw new IllegalArgumentException(
+					"La data di fine deve essere successiva alla data di inizio");
+		}
+	}
+
+	private void ensureMaxTeamSizeAccommodatesExistingTeams(int newMaxTeamSize) {
+		if (newMaxTeamSize >= this.maxTeamSize) {
+			return; // aumento o invariato: nessun rischio.
+		}
+		for (HackathonRegistration registration : registrations) {
+			Team team = registration.getTeam();
+			if (team == null) {
+				continue;
+			}
+			int size = team.getMembers() == null ? 0 : team.getMembers().size();
+			if (size > newMaxTeamSize) {
+				throw new IllegalStateException(
+						"Il team " + team.getId() + " ha " + size
+								+ " membri, supera la nuova dimensione massima "
+								+ newMaxTeamSize);
+			}
+		}
+	}
+
+	private void ensureUpdateKeepsRegistrationState(
+			LocalDate currentDate, LocalDate registrationDeadline,
+			LocalDate startDate, LocalDate endDate) {
+		HackathonStatus projected = HackathonStateFactory.fromStatus(HackathonStatus.REGISTRATION)
+				.updateStatus(currentDate, registrationDeadline, startDate, endDate);
+		if (projected != HackathonStatus.REGISTRATION) {
+			throw new it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException(
+					id, projected, HackathonStatus.REGISTRATION);
+		}
 	}
 
 	private boolean hasRegisteredTeam(Team team) {

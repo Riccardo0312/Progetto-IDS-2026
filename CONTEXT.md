@@ -12,9 +12,37 @@ _Avoid_: Hackaton
 The phase after team work ends in which assigned judges review submitted work.
 _Avoid_: Alla conclusione, concluso
 
+**In attesa di inizio**:
+The phase after the **registrationDeadline** has passed but before the
+**startDate** has been reached. New team registrations are no longer accepted;
+the **Hackathon** is not yet running. Internal status: `READY`.
+_Avoid_: In iscrizione, In corso, Bloccato
+
 **Concluso**:
 The phase after judging is complete and a winning team has been proclaimed.
 _Avoid_: In valutazione
+
+**Annullato**:
+A terminal phase reached when the **Organizzatore** cancels an **Hackathon**
+before it has started, while still in **In iscrizione** or **In attesa di
+inizio**. The record is preserved (no physical deletion); no further state
+transitions are allowed.
+_Avoid_: Eliminato, Cancellato fisicamente, Soft-deleted
+
+**Modifica dell'hackathon**:
+The act by the **Organizzatore** of changing descriptive or logistical parameters
+of an **Hackathon** (name, rules, location, prizeMoney, registrationDeadline,
+startDate, endDate, maxTeamSize). Allowed only while the **Hackathon** is in
+**In iscrizione**; staff composition (Giudice, Mentori) is changed by dedicated
+use cases, not by this one.
+_Avoid_: Aggiornamento generico, Edit, Patch
+
+**Sostituzione del giudice**:
+An atomic operation by the **Organizzatore** that replaces the current **Giudice**
+of an **Hackathon** with a different one. There is exactly one **Giudice** per
+**Hackathon** at all times (except after **Annullato**); the system never allows
+a transient "no judge" state. Allowed only in **In iscrizione** or **In corso**.
+_Avoid_: Rimozione del giudice, Cambio giudice generico
 
 **Giudice**:
 A staff member assigned to an hackathon to review submitted work.
@@ -59,6 +87,8 @@ leadership.
 ## Relationships
 
 - A **Giudice** is assigned to one or more **Hackathons**
+- An **Hackathon** has exactly one **Giudice** at all times (except after **Annullato**);
+  the **Giudice** can be changed only via **Sostituzione del giudice**, atomically
 - A **Mentore** is assigned to one or more **Hackathons**
 - A **Richiesta di supporto** belongs to exactly one **Team** and exactly one **Hackathon**
 - A **Mentore** handles **Richieste di supporto** only while the **Hackathon** is running
