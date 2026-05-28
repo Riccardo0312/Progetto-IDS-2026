@@ -8,6 +8,7 @@ import it.unicam.cs.ids.hackhub.service.interfaces.IHackathonRegistrationService
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,9 +37,9 @@ public class HackathonService implements IHackathonRegistrationService {
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new IllegalArgumentException("Hackathon non trovato"));
 
-        if (hackathon.getStatus() == HackathonStatus.CONCLUDED) {
-            throw new IllegalStateException("Hackathon già concluso");
-        }
+        // Allinea lo stato al tempo reale prima di applicare la guardia.
+        hackathon.updateStatus();
+        hackathon.ensureNewRegistrationsAllowed(LocalDate.now());
 
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));

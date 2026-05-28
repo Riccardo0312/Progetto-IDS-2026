@@ -442,22 +442,6 @@ class OrganizerServiceImplTest {
 	}
 
 	@Test
-	void replaceJudgeWorksInReady() {
-		Judge oldJudge = judgeWithId(JUDGE_ID);
-		Judge newJudge = judgeWithId(JUDGE_ID + 1);
-		Hackathon hackathon = createHackathon(HackathonStatus.READY);
-		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
-		hackathon.addJudge(oldJudge);
-
-		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
-		when(judgeRepository.findById(JUDGE_ID + 1)).thenReturn(Optional.of(newJudge));
-
-		organizerService.replaceJudge(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID + 1);
-
-		assertThat(hackathon.getJudge()).isSameAs(newJudge);
-	}
-
-	@Test
 	void replaceJudgeWorksInRunning() {
 		Judge oldJudge = judgeWithId(JUDGE_ID);
 		Judge newJudge = judgeWithId(JUDGE_ID + 1);
@@ -566,19 +550,6 @@ class OrganizerServiceImplTest {
 	}
 
 	@Test
-	void cancelHackathonInReadySetsStatusCancelled() {
-		Hackathon hackathon = createHackathon(HackathonStatus.READY);
-		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
-
-		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
-
-		organizerService.cancelHackathon(HACKATHON_ID, ORGANIZER_ID);
-
-		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.CANCELLED);
-		verify(hackathonRepository).save(hackathon);
-	}
-
-	@Test
 	void cancelHackathonRejectsRunning() {
 		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
 		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
@@ -664,24 +635,6 @@ class OrganizerServiceImplTest {
 		assertThat(hackathon.getPrizeMoney()).isEqualByComparingTo(BigDecimal.valueOf(7777));
 		assertThat(hackathon.getMaxTeamSize()).isEqualTo(8);
 		verify(hackathonRepository).save(hackathon);
-	}
-
-	@Test
-	void updateHackathonRejectsReady() {
-		Hackathon hackathon = createHackathon(HackathonStatus.READY);
-		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
-		LocalDate today = LocalDate.now();
-		UpdateHackathonRequestDTO request = new UpdateHackathonRequestDTO(
-				"x", "x", "x", BigDecimal.ONE, 5,
-				today.plusDays(10), today.plusDays(15), today.plusDays(20));
-
-		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
-
-		assertThatThrownBy(() ->
-						organizerService.updateHackathon(HACKATHON_ID, ORGANIZER_ID, request))
-				.isInstanceOf(InvalidHackathonStateException.class);
-
-		verify(hackathonRepository, never()).save(any());
 	}
 
 	@Test
@@ -846,12 +799,6 @@ class OrganizerServiceImplTest {
 				hackathon.setRegistrationDeadline(today.plusDays(5));
 				hackathon.setStartDate(today.plusDays(7));
 				hackathon.setEndDate(today.plusDays(15));
-				hackathon.updateStatus(today);
-			}
-			case READY -> {
-				hackathon.setRegistrationDeadline(today.minusDays(2));
-				hackathon.setStartDate(today.plusDays(3));
-				hackathon.setEndDate(today.plusDays(10));
 				hackathon.updateStatus(today);
 			}
 			case RUNNING -> {

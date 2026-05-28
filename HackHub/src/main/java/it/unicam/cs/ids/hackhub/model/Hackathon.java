@@ -192,8 +192,50 @@ public class Hackathon {
 		getCurrentState().ensureCancellationAllowed(id);
 	}
 
-	public void ensureModificationAllowed() {
-		getCurrentState().ensureModificationAllowed(id);
+	/**
+	 * Verifica che siano accettabili nuove iscrizioni di team. Vedi ADR 0003.
+	 *
+	 * <p>Permesso solo finche lo stato e {@code REGISTRATION} <strong>e</strong>
+	 * la data corrente non e oltre {@code registrationDeadline}. Il check
+	 * temporale e necessario perche tra {@code registrationDeadline} e
+	 * {@code startDate} l'hackathon e ancora in {@code REGISTRATION} (sotto-fase
+	 * "iscrizioni chiuse, evento non iniziato"), ma le iscrizioni vanno rifiutate.
+	 */
+	public void ensureNewRegistrationsAllowed(LocalDate currentDate) {
+		if (currentDate == null) {
+			throw new IllegalArgumentException("La data corrente non può essere null");
+		}
+		if (status != HackathonStatus.REGISTRATION) {
+			throw new it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException(
+					id, status, HackathonStatus.REGISTRATION);
+		}
+		if (registrationDeadline != null && currentDate.isAfter(registrationDeadline)) {
+			throw new IllegalStateException(
+					"Le iscrizioni per l'hackathon " + id
+							+ " sono chiuse dal " + registrationDeadline);
+		}
+	}
+
+	/**
+	 * Verifica che la modifica dei parametri sia consentita. Vedi ADR 0003.
+	 *
+	 * <p>Permesso solo se lo stato e {@code REGISTRATION} <strong>e</strong> la
+	 * data corrente non e oltre {@code registrationDeadline}: una volta chiuse
+	 * le iscrizioni, i team registrati hanno fatto affidamento sui parametri
+	 * dichiarati, quindi cambiarli sarebbe scorretto verso di loro.
+	 */
+	public void ensureModificationAllowed(LocalDate currentDate) {
+		if (currentDate == null) {
+			throw new IllegalArgumentException("La data corrente non può essere null");
+		}
+		if (status != HackathonStatus.REGISTRATION) {
+			throw new it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException(
+					id, status, HackathonStatus.REGISTRATION);
+		}
+		if (registrationDeadline != null && currentDate.isAfter(registrationDeadline)) {
+			throw new IllegalStateException(
+					"Modifica non permessa dopo la scadenza iscrizioni dell'hackathon " + id);
+		}
 	}
 
 	/**
@@ -241,12 +283,10 @@ public class Hackathon {
 			String name, String rules, String location, BigDecimal prizeMoney,
 			int maxTeamSize, LocalDate registrationDeadline, LocalDate startDate,
 			LocalDate endDate, LocalDate currentDate) {
-		ensureModificationAllowed();
+		ensureModificationAllowed(currentDate);
 		validateUpdateInputs(prizeMoney, maxTeamSize,
 				registrationDeadline, startDate, endDate, currentDate);
 		ensureMaxTeamSizeAccommodatesExistingTeams(maxTeamSize);
-		ensureUpdateKeepsRegistrationState(
-				currentDate, registrationDeadline, startDate, endDate);
 
 		this.name = name;
 		this.rules = rules;
@@ -302,17 +342,6 @@ public class Hackathon {
 								+ " membri, supera la nuova dimensione massima "
 								+ newMaxTeamSize);
 			}
-		}
-	}
-
-	private void ensureUpdateKeepsRegistrationState(
-			LocalDate currentDate, LocalDate registrationDeadline,
-			LocalDate startDate, LocalDate endDate) {
-		HackathonStatus projected = HackathonStateFactory.fromStatus(HackathonStatus.REGISTRATION)
-				.updateStatus(currentDate, registrationDeadline, startDate, endDate);
-		if (projected != HackathonStatus.REGISTRATION) {
-			throw new it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException(
-					id, projected, HackathonStatus.REGISTRATION);
 		}
 	}
 

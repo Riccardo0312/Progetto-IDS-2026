@@ -383,16 +383,19 @@ class TeamServiceTest {
         switch (status) {
             case REGISTRATION -> {
                 h.setRegistrationDeadline(today.plusDays(5));
+                h.setStartDate(today.plusDays(7));
                 h.setEndDate(today.plusDays(15));
                 h.updateStatus(today);
             }
             case RUNNING -> {
-                h.setRegistrationDeadline(today.minusDays(2));
+                h.setRegistrationDeadline(today.minusDays(5));
+                h.setStartDate(today.minusDays(2));
                 h.setEndDate(today.plusDays(5));
                 h.updateStatus(today);
             }
             case EVALUATION -> {
                 h.setRegistrationDeadline(today.minusDays(10));
+                h.setStartDate(today.minusDays(7));
                 h.setEndDate(today.minusDays(2));
                 h.updateStatus(today);
             }

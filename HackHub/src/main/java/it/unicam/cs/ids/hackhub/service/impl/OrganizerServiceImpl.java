@@ -332,13 +332,11 @@ public class OrganizerServiceImpl implements IOrganizerService {
     private void ensureStaffCanStillBeAssigned(Hackathon hackathon) {
         HackathonStatus status = hackathon.getStatus();
         if (status != HackathonStatus.REGISTRATION
-                && status != HackathonStatus.READY
                 && status != HackathonStatus.RUNNING) {
             throw new InvalidHackathonStateException(
                     hackathon.getId(),
                     status,
                     HackathonStatus.REGISTRATION,
-                    HackathonStatus.READY,
                     HackathonStatus.RUNNING);
         }
     }
