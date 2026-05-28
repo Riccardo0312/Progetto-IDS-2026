@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;
@@ -19,6 +20,8 @@ import it.unicam.cs.ids.hackhub.model.Evaluation;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
+import it.unicam.cs.ids.hackhub.model.Judge;
+import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.Organizer;
 import it.unicam.cs.ids.hackhub.model.PaymentResult;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
@@ -36,6 +39,7 @@ import it.unicam.cs.ids.hackhub.service.mapper.PrizeDisbursementMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +53,9 @@ class OrganizerServiceImplTest {
 
 	private static final Long HACKATHON_ID = 10L;
 	private static final Long ORGANIZER_ID = 99L;
+	private static final Long WRONG_ORGANIZER_ID = 100L;
+	private static final Long MENTOR_ID = 20L;
+	private static final Long JUDGE_ID = 30L;
 	private static final Long WINNING_TEAM_ID = 100L;
 
 	@Mock private HackathonRepository hackathonRepository;
@@ -278,6 +285,142 @@ class OrganizerServiceImplTest {
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
+	// ---- staff assignment ----
+
+	@Test
+	void addMentorRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.addMentorToHackathon(
+								HACKATHON_ID, WRONG_ORGANIZER_ID, MENTOR_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(mentorRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void removeMentorRejectsWrongOrganizer() {
+		Mentor mentor = mentorWithId(MENTOR_ID);
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addMentor(mentor);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.removeMentorFromHackathon(
+								HACKATHON_ID, WRONG_ORGANIZER_ID, MENTOR_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(mentorRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void removeMentorRejectsLastAssignedMentor() {
+		Mentor mentor = mentorWithId(MENTOR_ID);
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addMentor(mentor);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(mentorRepository.findById(MENTOR_ID)).thenReturn(Optional.of(mentor));
+
+		assertThatThrownBy(() ->
+						organizerService.removeMentorFromHackathon(
+								HACKATHON_ID, ORGANIZER_ID, MENTOR_ID))
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("L'hackathon deve avere almeno un mentore");
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void removeMentorRejectsEvaluationHackathon() {
+		Mentor firstMentor = mentorWithId(MENTOR_ID);
+		Mentor secondMentor = mentorWithId(MENTOR_ID + 1);
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		hackathon.addMentor(firstMentor);
+		hackathon.addMentor(secondMentor);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.removeMentorFromHackathon(
+								HACKATHON_ID, ORGANIZER_ID, MENTOR_ID))
+				.isInstanceOf(InvalidHackathonStateException.class);
+
+		verify(mentorRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void addJudgeRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.REGISTRATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.addJudgeToHackathon(
+								HACKATHON_ID, WRONG_ORGANIZER_ID, JUDGE_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(judgeRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void addJudgeRejectsEvaluationHackathon() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.addJudgeToHackathon(HACKATHON_ID, ORGANIZER_ID, JUDGE_ID))
+				.isInstanceOf(InvalidHackathonStateException.class);
+
+		verify(judgeRepository, never()).findById(any());
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void getAvailableMentorsReturnsSafeStaffSummaries() {
+		Mentor mentor = mentorWithId(MENTOR_ID);
+		mentor.setName("Ada Mentor");
+		mentor.setEmail("ada@example.test");
+		mentor.setPassword("secret-password");
+
+		when(mentorRepository.findAll()).thenReturn(List.of(mentor));
+
+		List<StaffMemberSummaryDTO> result = organizerService.getAvailableMentors();
+
+		assertThat(result).containsExactly(
+				new StaffMemberSummaryDTO(MENTOR_ID, "Ada Mentor", "ada@example.test"));
+	}
+
+	@Test
+	void getAvailableJudgesReturnsSafeStaffSummaries() {
+		Judge judge = judgeWithId(JUDGE_ID);
+		judge.setName("Grace Judge");
+		judge.setEmail("grace@example.test");
+		judge.setPassword("secret-password");
+
+		when(judgeRepository.findAll()).thenReturn(List.of(judge));
+
+		List<StaffMemberSummaryDTO> result = organizerService.getAvailableJudges();
+
+		assertThat(result).containsExactly(
+				new StaffMemberSummaryDTO(JUDGE_ID, "Grace Judge", "grace@example.test"));
+	}
+
 	// ---- helpers ----
 
 	private Hackathon createConcludedHackathon() {
@@ -292,6 +435,18 @@ class OrganizerServiceImplTest {
 		Organizer organizer = new Organizer();
 		organizer.setId(id);
 		return organizer;
+	}
+
+	private Mentor mentorWithId(Long id) {
+		Mentor mentor = new Mentor();
+		mentor.setId(id);
+		return mentor;
+	}
+
+	private Judge judgeWithId(Long id) {
+		Judge judge = new Judge();
+		judge.setId(id);
+		return judge;
 	}
 
 	private PrizeDisbursementResponseDTO sampleResponse(PrizeDisbursementStatus status) {

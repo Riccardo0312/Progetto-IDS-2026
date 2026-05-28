@@ -2,6 +2,7 @@ package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;
@@ -16,6 +17,7 @@ import it.unicam.cs.ids.hackhub.model.PaymentResult;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
 import it.unicam.cs.ids.hackhub.model.Team;
+import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.JudgeRepository;
 import it.unicam.cs.ids.hackhub.model.repository.MentorRepository;
@@ -100,13 +102,15 @@ public class OrganizerServiceImpl implements IOrganizerService {
 
     @Override
     @Transactional
-    public void addMentorToHackathon(Long hackathonId, Long mentorId) {
+    public void addMentorToHackathon(Long hackathonId, Long organizerId, Long mentorId) {
         Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        ensureStaffCanStillBeAssigned(hackathon);
+
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Mentore non trovato con ID: " + mentorId));
 
-        ensureMentorCanStillBeAssigned(hackathon);
         hackathon.addMentor(mentor);
         hackathonRepository.save(hackathon);
     }
@@ -193,22 +197,29 @@ public class OrganizerServiceImpl implements IOrganizerService {
 
     @Override
     @Transactional
-    public void removeMentorFromHackathon(Long hackathonId, Long mentorId) {
+    public void removeMentorFromHackathon(Long hackathonId, Long organizerId, Long mentorId) {
         Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        ensureStaffCanStillBeAssigned(hackathon);
+
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Mentore non trovato con ID: " + mentorId));
+        ensureMentorRemovalKeepsMinimum(hackathon);
+
         hackathon.removeMentor(mentor);
         hackathonRepository.save(hackathon);
     }
 
     @Override
     @Transactional
-    public void addJudgeToHackathon(Long hackathonId, Long judgeId) {
+    public void addJudgeToHackathon(Long hackathonId, Long organizerId, Long judgeId) {
         Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        ensureStaffCanStillBeAssigned(hackathon);
+
         if (hackathon.getJudge() != null) {
-            throw new IllegalStateException(
-                    "L'hackathon ha già un giudice assegnato. Rimuovilo prima di aggiungerne uno nuovo.");
+            throw new IllegalStateException("L'hackathon ha già un giudice assegnato");
         }
         Judge judge = judgeRepository.findById(judgeId)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -219,19 +230,26 @@ public class OrganizerServiceImpl implements IOrganizerService {
 
 
     @Override
-    public List<Mentor> getAvailableMentors() {
-        return mentorRepository.findAll();
+    public List<StaffMemberSummaryDTO> getAvailableMentors() {
+        return mentorRepository.findAll().stream()
+                .map(this::toStaffMemberSummary)
+                .toList();
     }
 
     @Override
-    public List<Judge> getAvailableJudges() {
-        return judgeRepository.findAll();
+    public List<StaffMemberSummaryDTO> getAvailableJudges() {
+        return judgeRepository.findAll().stream()
+                .map(this::toStaffMemberSummary)
+                .toList();
     }
 
     @Override
-    public List<Mentor> getMentorsByHackathon(Long hackathonId) {
+    public List<StaffMemberSummaryDTO> getMentorsByHackathon(Long hackathonId, Long organizerId) {
         Hackathon hackathon = findHackathonById(hackathonId);
-        return hackathon.getMentors();
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        return hackathon.getMentors().stream()
+                .map(this::toStaffMemberSummary)
+                .toList();
     }
 
     private boolean isAlreadyDisbursed(Long hackathonId) {
@@ -250,7 +268,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         return hackathon;
     }
 
-    private void ensureMentorCanStillBeAssigned(Hackathon hackathon) {
+    private void ensureStaffCanStillBeAssigned(Hackathon hackathon) {
         if (hackathon.getStatus() == HackathonStatus.EVALUATION
                 || hackathon.getStatus() == HackathonStatus.CONCLUDED) {
             throw new InvalidHackathonStateException(
@@ -258,6 +276,12 @@ public class OrganizerServiceImpl implements IOrganizerService {
                     hackathon.getStatus(),
                     HackathonStatus.REGISTRATION,
                     HackathonStatus.RUNNING);
+        }
+    }
+
+    private void ensureMentorRemovalKeepsMinimum(Hackathon hackathon) {
+        if (hackathon.getMentors().size() <= 1) {
+            throw new IllegalStateException("L'hackathon deve avere almeno un mentore");
         }
     }
 
@@ -280,5 +304,12 @@ public class OrganizerServiceImpl implements IOrganizerService {
                     "L'organizzatore " + organizerId
                             + " non è autorizzato per l'hackathon " + hackathon.getId());
         }
+    }
+
+    private StaffMemberSummaryDTO toStaffMemberSummary(User staffMember) {
+        return new StaffMemberSummaryDTO(
+                staffMember.getId(),
+                staffMember.getName(),
+                staffMember.getEmail());
     }
 }

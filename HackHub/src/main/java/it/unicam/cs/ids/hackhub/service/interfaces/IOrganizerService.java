@@ -2,9 +2,8 @@ package it.unicam.cs.ids.hackhub.service.interfaces;
 
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
-import it.unicam.cs.ids.hackhub.model.Judge;
-import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.Team;
 import java.util.List;
 
@@ -13,19 +12,17 @@ public interface IOrganizerService {
 	Hackathon createHackathon(Hackathon hackathon, Long organizerId,
 	                          Long judgeId, List<Long> mentorIds);
 
-	void addMentorToHackathon(Long hackathonId, Long mentorId);
+	void addMentorToHackathon(Long hackathonId, Long organizerId, Long mentorId);
 
-	void removeMentorFromHackathon(Long hackathonId, Long mentorId);
+	void removeMentorFromHackathon(Long hackathonId, Long organizerId, Long mentorId);
 
-	void addJudgeToHackathon(Long hackathonId, Long judgeId);
+	void addJudgeToHackathon(Long hackathonId, Long organizerId, Long judgeId);
 
-	List<Mentor> getAvailableMentors();
+	List<StaffMemberSummaryDTO> getAvailableMentors();
 
-	List<Judge> getAvailableJudges();
+	List<StaffMemberSummaryDTO> getAvailableJudges();
 
-	List<Mentor> getMentorsByHackathon(Long hackathonId);
-
-
+	List<StaffMemberSummaryDTO> getMentorsByHackathon(Long hackathonId, Long organizerId);
 
 	void proclaimWinner(Long hackathonId, Team winningTeam);
 
