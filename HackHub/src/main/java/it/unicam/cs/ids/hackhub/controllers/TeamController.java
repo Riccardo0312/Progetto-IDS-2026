@@ -2,6 +2,7 @@ package it.unicam.cs.ids.hackhub.controllers;
 
 import it.unicam.cs.ids.hackhub.dto.team.DeleteTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.team.LeaveTeamRequestDTO;
+import it.unicam.cs.ids.hackhub.dto.team.ViewTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.service.interfaces.ITeamService;
 import jakarta.validation.Valid;
@@ -42,6 +43,13 @@ public class TeamController {
     public void deleteTeam(@PathVariable Long teamId,
                            @Valid @RequestBody DeleteTeamRequestDTO request) {
         teamService.deleteTeam(teamId, request.userEmail());
+    }
+
+    @PostMapping("/{teamId}/view")
+    public Team viewTeam(@PathVariable Long teamId,
+                         @Valid @RequestBody ViewTeamRequestDTO request) {
+        // Il service restituisce direttamente l'entità Team
+        return teamService.viewTeamByUser(request.userEmail());
     }
 
     public record CreateTeamRequest(String name, String creatorEmail) {}

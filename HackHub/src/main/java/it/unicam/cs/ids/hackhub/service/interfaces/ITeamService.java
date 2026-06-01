@@ -23,4 +23,12 @@ public interface ITeamService {
      * in stato {@code REGISTRATION}. Cascade: rimuove TeamMember e Invitation.
      */
     void deleteTeam(Long teamId, String leaderEmail);
+
+    /**
+     * Visualizza il team
+     *
+     */
+
+    Team viewTeamByUser(String userEmail);
+
 }

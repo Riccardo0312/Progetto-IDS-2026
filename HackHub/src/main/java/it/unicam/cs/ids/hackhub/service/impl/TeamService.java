@@ -157,4 +157,31 @@ public class TeamService implements ITeamService {
         member.getTeam().getMembers().remove(member);
         teamMemberRepository.delete(member);
     }
+
+    @Transactional
+    public Team viewTeamByUser(String userEmail) {
+        // 1️⃣ Recupera l'utente autenticato
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+
+        // 2️⃣ Recupera l'associazione tra utente e team
+        TeamMember membership = (TeamMember) teamMemberRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("L'utente non appartiene a nessun team"));
+
+        // 3️⃣ Controlla che l'utente abbia ruolo Team Leader o Member
+        if (!(membership.getRole() == TeamRole.LEADER || membership.getRole() == TeamRole.MEMBER)) {
+            throw new ForbiddenOperationException("Solo il Team Leader o i membri possono visualizzare il team");
+        }
+
+        // 4️⃣Recupera il team associato
+        Team team = membership.getTeam();
+
+        // 5️⃣ Forza il caricamento dei membri e delle registrazioni
+        team.getMembers().size(); // evita LazyInitializationException
+        team.getRegistrations().size(); // hackathon a cui è iscritto
+
+        // 6️⃣ Restituisce direttamente il team con tutte le informazioni necessarie
+        return team;
+    }
+
 }

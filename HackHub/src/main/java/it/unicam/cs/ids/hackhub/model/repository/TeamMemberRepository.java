@@ -2,6 +2,8 @@ package it.unicam.cs.ids.hackhub.model.repository;
 
 import it.unicam.cs.ids.hackhub.model.TeamMember;
 import it.unicam.cs.ids.hackhub.model.TeamRole;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +22,8 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     long countByTeamIdAndRole(Long teamId, TeamRole role);
 
     Optional<TeamMember> findByTeamIdAndUserId(Long teamId, Long userId);
+
+    List<TeamMember> findByTeamId(Long teamId);
+
+    Optional<Object> findByUserId(Long userId);
 }
