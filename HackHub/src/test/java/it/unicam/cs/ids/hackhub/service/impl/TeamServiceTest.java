@@ -7,6 +7,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
+import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
@@ -363,6 +365,93 @@ class TeamServiceTest {
 
         assertThat(legacyMember.isMember()).isTrue();
         assertThat(legacyMember.isLeader()).isFalse();
+    }
+
+    // ---- viewTeam ----
+
+    @Test
+    void viewTeam_asLeader_returnsTeamDetails() {
+        Hackathon hackathon = buildHackathon(HackathonStatus.REGISTRATION);
+        hackathon.setName("Spring Hack");
+        team.getRegistrations().add(buildRegistration(hackathon));
+
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("leader@test.it")).thenReturn(Optional.of(creator));
+        when(teamMemberRepository.findByTeamIdAndUserId(10L, 1L)).thenReturn(Optional.of(leaderMember));
+
+        TeamDetailsDTO result = teamService.viewTeam(10L, "leader@test.it");
+
+        assertThat(result.teamId()).isEqualTo(10L);
+        assertThat(result.teamName()).isEqualTo("TestTeam");
+        assertThat(result.teamLeader().userId()).isEqualTo(1L);
+        assertThat(result.members()).isEmpty();
+        assertThat(result.registeredHackathons()).hasSize(1);
+        assertThat(result.registeredHackathons().get(0).name()).isEqualTo("Spring Hack");
+    }
+
+    @Test
+    void viewTeam_asMember_returnsTeamDetails() {
+        User memberUser = buildUser(2L, "member@test.it");
+        TeamMember memberMember = new TeamMember(memberUser, team, TeamRole.MEMBER);
+        team.getMembers().add(memberMember);
+
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("member@test.it")).thenReturn(Optional.of(memberUser));
+        when(teamMemberRepository.findByTeamIdAndUserId(10L, 2L)).thenReturn(Optional.of(memberMember));
+
+        TeamDetailsDTO result = teamService.viewTeam(10L, "member@test.it");
+
+        assertThat(result.teamLeader().userId()).isEqualTo(1L);
+        assertThat(result.members()).extracting(UserSummaryDTO::userId).containsExactly(2L);
+    }
+
+    @Test
+    void viewTeam_treatsNullRoleAsMember() {
+        User legacyUser = buildUser(2L, "legacy@test.it");
+        TeamMember legacyMember = new TeamMember(legacyUser, team, null);
+        team.getMembers().add(legacyMember);
+
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("legacy@test.it")).thenReturn(Optional.of(legacyUser));
+        when(teamMemberRepository.findByTeamIdAndUserId(10L, 2L)).thenReturn(Optional.of(legacyMember));
+
+        TeamDetailsDTO result = teamService.viewTeam(10L, "legacy@test.it");
+
+        assertThat(result.members()).extracting(UserSummaryDTO::userId).containsExactly(2L);
+    }
+
+    @Test
+    void viewTeam_throwsWhenTeamNotFound() {
+        when(teamRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> teamService.viewTeam(99L, "leader@test.it"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Team non trovato");
+        verify(userRepository, never()).findByEmail(any());
+    }
+
+    @Test
+    void viewTeam_throwsWhenUserNotFound() {
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("nobody@test.it")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> teamService.viewTeam(10L, "nobody@test.it"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Utente non trovato");
+        verify(teamMemberRepository, never()).findByTeamIdAndUserId(any(), any());
+    }
+
+    @Test
+    void viewTeam_throwsWhenUserDoesNotBelongToRequestedTeam() {
+        User outsider = buildUser(99L, "outsider@test.it");
+
+        when(teamRepository.findById(10L)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail("outsider@test.it")).thenReturn(Optional.of(outsider));
+        when(teamMemberRepository.findByTeamIdAndUserId(10L, 99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> teamService.viewTeam(10L, "outsider@test.it"))
+                .isInstanceOf(ForbiddenOperationException.class)
+                .hasMessageContaining("non appartiene al team");
     }
 
     // ---- helpers ----
