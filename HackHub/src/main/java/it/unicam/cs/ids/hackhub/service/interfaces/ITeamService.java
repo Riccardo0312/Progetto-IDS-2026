@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.interfaces;
 
+import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.model.Team;
 
 public interface ITeamService {
@@ -23,4 +24,13 @@ public interface ITeamService {
      * in stato {@code REGISTRATION}. Cascade: rimuove TeamMember e Invitation.
      */
     void deleteTeam(Long teamId, String leaderEmail);
+
+    /**
+     * Restituisce i dettagli del team richiesto.
+     *
+     * <p>L'utente identificato da {@code userEmail} deve esistere e appartenere
+     * al team {@code teamId}; in caso contrario l'operazione viene rifiutata.
+     */
+    TeamDetailsDTO viewTeam(Long teamId, String userEmail);
+
 }

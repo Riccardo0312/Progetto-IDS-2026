@@ -1,6 +1,11 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.dto.team.HackathonSummaryDTO;
+import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
+import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.model.Hackathon;
+import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
@@ -157,4 +162,55 @@ public class TeamService implements ITeamService {
         member.getTeam().getMembers().remove(member);
         teamMemberRepository.delete(member);
     }
+
+    @Override
+    @Transactional
+    public TeamDetailsDTO viewTeam(Long teamId, String userEmail) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+
+        TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, user.getId())
+                .orElseThrow(() -> new ForbiddenOperationException(
+                        "L'utente non appartiene al team"));
+
+        if (!membership.isLeader() && !membership.isMember()) {
+            throw new ForbiddenOperationException("Solo il Team Leader o i membri possono visualizzare il team");
+        }
+
+        return toTeamDetails(team);
+    }
+
+    private TeamDetailsDTO toTeamDetails(Team team) {
+        UserSummaryDTO teamLeader = team.findLeader()
+                .map(this::toUserSummary)
+                .orElse(null);
+        List<UserSummaryDTO> members = team.getMembers().stream()
+                .filter(TeamMember::isMember)
+                .map(this::toUserSummary)
+                .toList();
+        List<HackathonSummaryDTO> registeredHackathons = team.getRegistrations().stream()
+                .map(HackathonRegistration::getHackathon)
+                .filter(Objects::nonNull)
+                .map(this::toHackathonSummary)
+                .toList();
+
+        return new TeamDetailsDTO(
+                team.getId(),
+                team.getName(),
+                teamLeader,
+                members,
+                registeredHackathons);
+    }
+
+    private UserSummaryDTO toUserSummary(TeamMember teamMember) {
+        User user = teamMember.getUser();
+        return new UserSummaryDTO(user.getId(), user.getName());
+    }
+
+    private HackathonSummaryDTO toHackathonSummary(Hackathon hackathon) {
+        return new HackathonSummaryDTO(hackathon.getId(), hackathon.getName());
+    }
+
 }
