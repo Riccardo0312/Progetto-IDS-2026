@@ -42,7 +42,7 @@ public class SubmissionController {
 			@PathVariable Long registrationId,
 			@Valid @RequestBody UploadSubmissionRequestDTO request) {
 		Submission submission = submissionService.uploadSubmission(
-				registrationId, request.title(), request.description(), request.projectLink());
+				registrationId, request.userEmail(), request.title(), request.description(), request.projectLink());
 		return submissionMapper.toResponse(submission);
 	}
 
@@ -51,7 +51,7 @@ public class SubmissionController {
 			@PathVariable Long submissionId,
 			@Valid @RequestBody UpdateSubmissionRequestDTO request) {
 		Submission submission = submissionService.updateSubmission(
-				submissionId, request.title(), request.description(), request.projectLink());
+				submissionId, request.userEmail(), request.title(), request.description(), request.projectLink());
 		return submissionMapper.toResponse(submission);
 	}
 }

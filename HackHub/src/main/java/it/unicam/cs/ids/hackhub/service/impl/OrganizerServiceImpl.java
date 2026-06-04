@@ -80,17 +80,15 @@ public class OrganizerServiceImpl implements IOrganizerService {
         }
 
         Organizer organizer = organizerRepository.findById(organizerId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Organizzatore non trovato con ID: " + organizerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Organizzatore", organizerId));
 
         Judge judge = judgeRepository.findById(judgeId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Giudice non trovato con ID: " + judgeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Giudice", judgeId));
 
         List<Long> distinctMentorIds = mentorIds.stream().distinct().toList();
         List<Mentor> mentors = mentorRepository.findAllById(distinctMentorIds);
         if (mentors.size() != distinctMentorIds.size()) {
-            throw new IllegalArgumentException("Uno o più mentori non trovati");
+            throw new ResourceNotFoundException("Uno o più mentori non trovati");
         }
 
         hackathon.setOrganizer(organizer);
@@ -110,8 +108,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         ensureStaffCanStillBeAssigned(hackathon);
 
         Mentor mentor = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Mentore non trovato con ID: " + mentorId));
+                .orElseThrow(() -> new ResourceNotFoundException("Mentore", mentorId));
 
         hackathon.addMentor(mentor);
         hackathonRepository.save(hackathon);
@@ -132,8 +129,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
     @Override
     public List<HackathonResponseDTO> getHackathonsByOrganizer(Long organizerId) {
         Organizer organizer = organizerRepository.findById(organizerId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Organizzatore non trovato con ID: " + organizerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Organizzatore", organizerId));
         return organizer.getOrganizedHackathons().stream()
                 .map(h -> hackathonMapper.toResponse(h, isAlreadyDisbursed(h.getId())))
                 .toList();
@@ -205,8 +201,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         ensureStaffCanStillBeAssigned(hackathon);
 
         Mentor mentor = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Mentore non trovato con ID: " + mentorId));
+                .orElseThrow(() -> new ResourceNotFoundException("Mentore", mentorId));
         ensureMentorRemovalKeepsMinimum(hackathon);
 
         hackathon.removeMentor(mentor);
@@ -224,8 +219,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
             throw new IllegalStateException("L'hackathon ha già un giudice assegnato");
         }
         Judge judge = judgeRepository.findById(judgeId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Giudice non trovato con ID: " + judgeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Giudice", judgeId));
         hackathon.addJudge(judge);
         hackathonRepository.save(hackathon);
     }

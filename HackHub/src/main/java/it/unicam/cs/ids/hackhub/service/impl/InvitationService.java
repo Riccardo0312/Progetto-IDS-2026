@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.*;
 import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
@@ -33,11 +34,11 @@ public class InvitationService implements IInvitationService {
     @Transactional
     public Invitation sendInvitation(Long teamId, String recipientEmail, String senderEmail) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
         User recipient = userRepository.findByEmail(recipientEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Destinatario non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", recipientEmail));
         User sender = userRepository.findByEmail(senderEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Mittente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", senderEmail));
 
         validateSenderIsLeader(team, sender);
         validateUserCanJoinTeam(recipient);
@@ -54,9 +55,9 @@ public class InvitationService implements IInvitationService {
     @Transactional
     public Invitation acceptInvitation(Long invitationId, String userEmail) {
         Invitation invitation = invitationRepository.findById(invitationId)
-                .orElseThrow(() -> new IllegalArgumentException("Invito non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invito", invitationId));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
 
         if (!isInvitationRecipient(invitation, user)) {
             throw new IllegalArgumentException("L'invito non è per questo utente");
@@ -78,9 +79,9 @@ public class InvitationService implements IInvitationService {
     @Transactional
     public Invitation rejectInvitation(Long invitationId, String userEmail) {
         Invitation invitation = invitationRepository.findById(invitationId)
-                .orElseThrow(() -> new IllegalArgumentException("Invito non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invito", invitationId));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
 
         if (!isInvitationRecipient(invitation, user)) {
             throw new IllegalArgumentException("L'invito non è per questo utente");

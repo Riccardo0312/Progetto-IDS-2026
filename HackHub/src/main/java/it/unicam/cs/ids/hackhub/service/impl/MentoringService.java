@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
@@ -26,7 +27,7 @@ public class MentoringService implements IMentoringRequestService {
     @Transactional
     public SupportRequest createSupportRequest(Long registrationId, String message) {
         HackathonRegistration registration = registrationRepository.findById(registrationId)
-                .orElseThrow(() -> new IllegalArgumentException("Registrazione non trovata"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registrazione", registrationId));
 
         SupportRequest request = new SupportRequest();
         request.setTeam(registration.getTeam());

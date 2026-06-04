@@ -27,4 +27,8 @@ public final class RunningState implements HackathonState {
 	public void ensureMentorActionsAllowed(Long hackathonId) {
 	}
 
+	@Override
+	public void ensureSubmissionActionsAllowed(Long hackathonId) {
+	}
+
 }

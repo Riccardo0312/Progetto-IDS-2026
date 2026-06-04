@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.User;
@@ -48,8 +49,7 @@ public class GuestServiceImpl implements IGuestService {
             throw new IllegalArgumentException("L'ID non può essere null");
         }
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Hackathon non trovato con ID: " + hackathonId));
+                .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
         hackathon.updateStatus();
         return hackathon;
     }

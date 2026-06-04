@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
@@ -92,8 +93,8 @@ class TeamServiceTest {
         when(userRepository.findByEmail("nobody@test.it")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.createTeam("T", "nobody@test.it"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Utente non trovato");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Utente");
     }
 
     @Test
@@ -425,8 +426,8 @@ class TeamServiceTest {
         when(teamRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.viewTeam(99L, "leader@test.it"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Team non trovato");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Team");
         verify(userRepository, never()).findByEmail(any());
     }
 
@@ -436,8 +437,8 @@ class TeamServiceTest {
         when(userRepository.findByEmail("nobody@test.it")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.viewTeam(10L, "nobody@test.it"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Utente non trovato");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Utente");
         verify(teamMemberRepository, never()).findByTeamIdAndUserId(any(), any());
     }
 

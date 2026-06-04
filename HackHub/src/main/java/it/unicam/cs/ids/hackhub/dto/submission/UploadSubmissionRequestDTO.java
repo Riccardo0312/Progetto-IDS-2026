@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.dto.submission;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
@@ -11,6 +12,7 @@ import org.hibernate.validator.constraints.URL;
  * fallire presto (400) prima di raggiungere il service.
  */
 public record UploadSubmissionRequestDTO(
+		@NotBlank @Email String userEmail,
 		@NotBlank @Size(max = 150) String title,
 		@NotBlank @Size(max = 4000) String description,
 		@NotBlank @URL @Size(max = 500) String projectLink) {}

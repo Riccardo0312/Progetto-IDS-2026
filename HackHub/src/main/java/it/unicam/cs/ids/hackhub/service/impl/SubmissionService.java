@@ -1,37 +1,63 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
+import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.Submission;
+import it.unicam.cs.ids.hackhub.model.Team;
+import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
+import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
+import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.ISubmissionService;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+/**
+ * Caso d'uso "Il team invia / modifica la sottomissione".
+ *
+ * <p>Authz: solo il leader o un membro del team proprietario (catena
+ * registrazione -> team -> membership). L'azione e permessa solo mentre
+ * l'hackathon e in stato {@code RUNNING} (guardia di stato), previo refresh
+ * dello stato in base alla data corrente.
+ *
+ * <p>Ordine dei controlli: esistenza (404) -> membership (403) -> stato
+ * hackathon (409) -> [solo upload] sottomissione gia presente (409).
+ */
 @Service
 public class SubmissionService implements ISubmissionService {
 
     private final HackathonRegistrationRepository registrationRepository;
     private final SubmissionRepository submissionRepository;
+    private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     public SubmissionService(HackathonRegistrationRepository registrationRepository,
-                             SubmissionRepository submissionRepository) {
+                             SubmissionRepository submissionRepository,
+                             UserRepository userRepository,
+                             TeamMemberRepository teamMemberRepository) {
         this.registrationRepository = registrationRepository;
         this.submissionRepository = submissionRepository;
+        this.userRepository = userRepository;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     @Override
     @Transactional
     public Submission uploadSubmission(
-            Long registrationId, String title, String description, String projectLink) {
+            Long registrationId, String userEmail, String title, String description, String projectLink) {
         HackathonRegistration registration = registrationRepository.findById(registrationId)
-                .orElseThrow(() -> new IllegalArgumentException("Registrazione non trovata"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registrazione", registrationId));
 
-        if (isSubmissionDeadlineExpired(registration)) {
-            throw new IllegalStateException("Deadline superata");
+        ensureCallerIsTeamMember(registration.getTeam(), userEmail);
+        ensureHackathonAcceptsSubmissions(registration.getHackathon());
+
+        if (registration.getSubmission() != null) {
+            throw new IllegalStateException(
+                    "La registrazione ha gia una sottomissione: usa la modifica");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -49,13 +75,13 @@ public class SubmissionService implements ISubmissionService {
     @Override
     @Transactional
     public Submission updateSubmission(
-            Long submissionId, String title, String description, String projectLink) {
+            Long submissionId, String userEmail, String title, String description, String projectLink) {
         Submission submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new IllegalArgumentException("Sottomissione non trovata"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sottomissione", submissionId));
 
-        if (isSubmissionDeadlineExpired(submission.getRegistration())) {
-            throw new IllegalStateException("Deadline superata");
-        }
+        HackathonRegistration registration = submission.getRegistration();
+        ensureCallerIsTeamMember(registration.getTeam(), userEmail);
+        ensureHackathonAcceptsSubmissions(registration.getHackathon());
 
         submission.setTitle(title);
         submission.setDescription(description);
@@ -65,7 +91,25 @@ public class SubmissionService implements ISubmissionService {
         return submissionRepository.save(submission);
     }
 
-    private boolean isSubmissionDeadlineExpired(HackathonRegistration registration) {
-        return LocalDate.now().isAfter(registration.getHackathon().getEndDate());
+    /**
+     * Verifica che {@code userEmail} appartenga a un utente che e leader o
+     * membro del team proprietario della sottomissione.
+     */
+    private void ensureCallerIsTeamMember(Team team, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
+        if (!teamMemberRepository.existsByTeamIdAndUserId(team.getId(), user.getId())) {
+            throw new ForbiddenOperationException(
+                    "Solo i membri del team possono gestire la sottomissione");
+        }
+    }
+
+    /**
+     * Allinea lo stato dell'hackathon alla data corrente e verifica che la fase
+     * permetta azioni sulle sottomissioni (solo {@code RUNNING}).
+     */
+    private void ensureHackathonAcceptsSubmissions(Hackathon hackathon) {
+        hackathon.updateStatus();
+        hackathon.ensureSubmissionActionsAllowed();
     }
 }

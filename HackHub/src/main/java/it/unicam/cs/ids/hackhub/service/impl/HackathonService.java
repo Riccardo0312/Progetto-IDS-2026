@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.*;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
@@ -35,14 +36,14 @@ public class HackathonService implements IHackathonRegistrationService {
     @Transactional
     public HackathonRegistration registerTeam(Long hackathonId, Long teamId) {
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
-                .orElseThrow(() -> new IllegalArgumentException("Hackathon non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
 
         // Allinea lo stato al tempo reale prima di applicare la guardia.
         hackathon.updateStatus();
         hackathon.ensureNewRegistrationsAllowed(LocalDate.now());
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
 
         if (hackathonRegistrationRepository.existsByHackathonIdAndTeamId(hackathonId, teamId)) {
             throw new IllegalStateException("Team già registrato a questo hackathon");

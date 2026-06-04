@@ -4,6 +4,7 @@ import it.unicam.cs.ids.hackhub.dto.team.HackathonSummaryDTO;
 import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
+import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
@@ -52,7 +53,7 @@ public class TeamService implements ITeamService {
     @Transactional
     public Team createTeam(String name, String creatorEmail) {
         User creator = userRepository.findByEmail(creatorEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", creatorEmail));
 
         if (teamRepository.existsByNameIgnoreCase(name)) {
             throw new IllegalArgumentException("Esiste già un team con questo nome");
@@ -76,9 +77,9 @@ public class TeamService implements ITeamService {
     @Transactional
     public void leaveTeam(Long teamId, String userEmail, String successorEmail) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
 
         TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, user.getId())
                 .orElseThrow(() -> new ForbiddenOperationException(
@@ -95,9 +96,9 @@ public class TeamService implements ITeamService {
     @Transactional
     public void deleteTeam(Long teamId, String leaderEmail) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
         User user = userRepository.findByEmail(leaderEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", leaderEmail));
 
         if (!teamMemberRepository.existsByTeamIdAndUserIdAndRole(
                 teamId, user.getId(), TeamRole.LEADER)) {
@@ -137,7 +138,7 @@ public class TeamService implements ITeamService {
         }
 
         User successorUser = userRepository.findByEmail(successorEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Successore non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", successorEmail));
         if (Objects.equals(leader.getUser().getId(), successorUser.getId())) {
             throw new IllegalArgumentException(
                     "Il leader deve indicare un successore diverso da se stesso");
@@ -167,9 +168,9 @@ public class TeamService implements ITeamService {
     @Transactional
     public TeamDetailsDTO viewTeam(Long teamId, String userEmail) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
 
         TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, user.getId())
                 .orElseThrow(() -> new ForbiddenOperationException(

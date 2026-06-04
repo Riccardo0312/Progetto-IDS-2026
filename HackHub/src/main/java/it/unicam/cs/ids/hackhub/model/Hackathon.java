@@ -180,6 +180,10 @@ public class Hackathon {
 		getCurrentState().ensureMentorActionsAllowed(id);
 	}
 
+	public void ensureSubmissionActionsAllowed() {
+		getCurrentState().ensureSubmissionActionsAllowed(id);
+	}
+
 	public void ensureJudgingActionsAllowed() {
 		getCurrentState().ensureJudgingActionsAllowed(id);
 	}

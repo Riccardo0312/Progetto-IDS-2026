@@ -33,6 +33,15 @@ public sealed interface HackathonState
 				hackathonId, getStatus(), HackathonStatus.RUNNING);
 	}
 
+	/**
+	 * Default-deny: l'invio e la modifica di una sottomissione sono permessi
+	 * solo mentre l'hackathon e in {@link RunningState}.
+	 */
+	default void ensureSubmissionActionsAllowed(Long hackathonId) {
+		throw new InvalidHackathonStateException(
+				hackathonId, getStatus(), HackathonStatus.RUNNING);
+	}
+
 	default void ensureJudgingActionsAllowed(Long hackathonId) {
 		throw new InvalidHackathonStateException(
 				hackathonId, getStatus(), HackathonStatus.EVALUATION);
