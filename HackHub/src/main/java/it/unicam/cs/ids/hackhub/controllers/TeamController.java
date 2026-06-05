@@ -37,9 +37,10 @@ public class TeamController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('USER')")
-	public Team createTeam(
+	public TeamDetailsDTO createTeam(
 			@Valid @RequestBody CreateTeamRequest request, Authentication authentication) {
-		return teamService.createTeam(request.name(), authentication.getName());
+		Team team = teamService.createTeam(request.name(), authentication.getName());
+		return teamService.viewTeam(team.getId(), authentication.getName());
 	}
 
 	@PostMapping("/{teamId}/leave")
