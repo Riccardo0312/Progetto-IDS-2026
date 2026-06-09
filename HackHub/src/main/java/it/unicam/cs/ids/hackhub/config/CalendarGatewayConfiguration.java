@@ -9,7 +9,7 @@ public class CalendarGatewayConfiguration {
 
 	@Bean
 	public ICalendarGateway developmentCalendarGateway() {
-		return (supportRequest, mentor) ->
+		return (supportRequest, mentor, proposedSlots) ->
 				"https://calendar.hackhub.local/bookings/support-"
 						+ supportRequest.getId()
 						+ "/mentor-"

@@ -16,7 +16,8 @@ public interface IMentorService {
 	SupportResponse respondToSupportRequest(
 			Long mentorId, Long hackathonId, Long supportRequestId, String message);
 
-	MentoringCallProposal proposeCall(Long mentorId, Long hackathonId, Long supportRequestId);
+	MentoringCallProposal proposeCall(
+			Long mentorId, Long hackathonId, Long supportRequestId, String proposedSlots);
 
 	ViolationReport reportViolation(
 			Long mentorId, Long hackathonId, Long teamId, String description);

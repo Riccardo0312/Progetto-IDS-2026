@@ -8,5 +8,6 @@ public record SupportRequestResponseDTO(
 		Long teamId,
 		String description,
 		LocalDateTime requestedAt,
+		MentoringCallProposalDTO callProposal,
 		SupportResponseDTO response) {
 }

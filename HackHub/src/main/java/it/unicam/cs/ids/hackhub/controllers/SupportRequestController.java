@@ -1,9 +1,12 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
+import it.unicam.cs.ids.hackhub.dto.support.CreateMentoringCallProposalDTO;
 import it.unicam.cs.ids.hackhub.dto.support.CreateSupportRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.support.CreateSupportResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.support.MentoringCallProposalDTO;
 import it.unicam.cs.ids.hackhub.dto.support.SupportRequestResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.support.SupportResponseDTO;
+import it.unicam.cs.ids.hackhub.model.MentoringCallProposal;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
 import it.unicam.cs.ids.hackhub.model.SupportResponse;
 import it.unicam.cs.ids.hackhub.service.interfaces.IMentorService;
@@ -98,11 +101,30 @@ public class SupportRequestController {
 			@PathVariable Long mentorId,
 			@PathVariable Long hackathonId,
 			@PathVariable Long supportRequestId) {
-			SupportRequest supportRequest = mentorService.getAssignedHackathonSupportRequest(
-					mentorId,
-					hackathonId,
-					supportRequestId);
-			return supportRequestMapper.toResponse(supportRequest);
+		SupportRequest supportRequest = mentorService.getAssignedHackathonSupportRequest(
+				mentorId,
+				hackathonId,
+				supportRequestId);
+		return supportRequestMapper.toResponse(supportRequest);
+	}
+
+	@PostMapping("/mentors/{mentorId}/hackathons/{hackathonId}/support-requests/{supportRequestId}/call-proposal")
+	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize(
+			"hasRole('MENTOR') "
+					+ "and @hackHubAuthorizationService.isMentorSelf(#mentorId, authentication.name) "
+					+ "and @hackHubAuthorizationService.isAssignedMentor(#hackathonId, authentication.name)")
+	public MentoringCallProposalDTO proposeCall(
+			@PathVariable Long mentorId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long supportRequestId,
+			@Valid @RequestBody CreateMentoringCallProposalDTO request) {
+		MentoringCallProposal callProposal = mentorService.proposeCall(
+				mentorId,
+				hackathonId,
+				supportRequestId,
+				request.proposedSlots());
+		return supportRequestMapper.toResponse(callProposal);
 	}
 
 	@PostMapping("/mentors/{mentorId}/hackathons/{hackathonId}/support-requests/{supportRequestId}/response")

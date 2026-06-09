@@ -1,7 +1,9 @@
 package it.unicam.cs.ids.hackhub.service.mapper;
 
+import it.unicam.cs.ids.hackhub.dto.support.MentoringCallProposalDTO;
 import it.unicam.cs.ids.hackhub.dto.support.SupportRequestResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.support.SupportResponseDTO;
+import it.unicam.cs.ids.hackhub.model.MentoringCallProposal;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
 import it.unicam.cs.ids.hackhub.model.SupportResponse;
 import org.mapstruct.Mapper;
@@ -19,4 +21,8 @@ public interface SupportRequestMapper {
 	@Mapping(target = "supportRequestId", source = "supportRequest.id")
 	@Mapping(target = "mentorId", source = "mentor.id")
 	SupportResponseDTO toResponse(SupportResponse supportResponse);
+
+	@Mapping(target = "supportRequestId", source = "supportRequest.id")
+	@Mapping(target = "mentorId", source = "mentor.id")
+	MentoringCallProposalDTO toResponse(MentoringCallProposal callProposal);
 }

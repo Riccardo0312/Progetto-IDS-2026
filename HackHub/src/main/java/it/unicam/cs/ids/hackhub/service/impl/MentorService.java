@@ -113,7 +113,9 @@ public class MentorService implements IMentorService {
 
 	@Override
 	@Transactional
-	public MentoringCallProposal proposeCall(Long mentorId, Long hackathonId, Long supportRequestId) {
+	public MentoringCallProposal proposeCall(
+			Long mentorId, Long hackathonId, Long supportRequestId, String proposedSlots) {
+		String normalizedProposedSlots = normalizeRequiredProposedSlots(proposedSlots);
 		Mentor mentor = findMentorById(mentorId);
 		Hackathon hackathon = findHackathonById(hackathonId);
 		SupportRequest supportRequest = findSupportRequestById(supportRequestId);
@@ -122,12 +124,14 @@ public class MentorService implements IMentorService {
 		validateSupportRequestBelongsToHackathon(supportRequest, hackathonId);
 		validateSupportRequestHasNoFollowUp(supportRequestId);
 
-		String bookingLink = calendarGateway.createBookingLink(supportRequest, mentor);
+		String bookingLink =
+				calendarGateway.createBookingLink(supportRequest, mentor, normalizedProposedSlots);
 		validateBookingLink(bookingLink);
 
 		MentoringCallProposal callProposal = new MentoringCallProposal();
 		callProposal.setMentor(mentor);
 		callProposal.setSupportRequest(supportRequest);
+		callProposal.setProposedSlots(normalizedProposedSlots);
 		callProposal.setBookingLink(bookingLink.strip());
 		callProposal.setProposedAt(LocalDateTime.now());
 
@@ -267,6 +271,14 @@ public class MentorService implements IMentorService {
 		}
 
 		return message.strip();
+	}
+
+	private String normalizeRequiredProposedSlots(String proposedSlots) {
+		if (proposedSlots == null || proposedSlots.isBlank()) {
+			throw new IllegalArgumentException("Mentoring call proposed slots must not be blank");
+		}
+
+		return proposedSlots.strip();
 	}
 
 }

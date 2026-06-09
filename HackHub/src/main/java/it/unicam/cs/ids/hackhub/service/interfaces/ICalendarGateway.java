@@ -5,6 +5,6 @@ import it.unicam.cs.ids.hackhub.model.SupportRequest;
 
 public interface ICalendarGateway {
 
-	String createBookingLink(SupportRequest supportRequest, Mentor mentor);
+	String createBookingLink(SupportRequest supportRequest, Mentor mentor, String proposedSlots);
 
 }
