@@ -12,43 +12,39 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "support_requests")
+@Table(name = "support_responses")
 @Getter
 @Setter
 @NoArgsConstructor
-public class SupportRequest {
+public class SupportResponse {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotBlank
+	@Size(max = 2000)
 	@Column(nullable = false, length = 2000)
 	private String message;
 
 	@NotNull
 	@Column(nullable = false)
-	private LocalDateTime requestedAt;
+	private LocalDateTime respondedAt;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "hackathon_id", nullable = false)
-	private Hackathon hackathon;
+	@JoinColumn(name = "mentor_id", nullable = false)
+	private Mentor mentor;
 
 	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "team_id", nullable = false)
-	private Team team;
-
-	@OneToOne(mappedBy = "supportRequest")
-	private MentoringCallProposal callProposal;
-
-	@OneToOne(mappedBy = "supportRequest")
-	private SupportResponse supportResponse;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "support_request_id", nullable = false, unique = true)
+	private SupportRequest supportRequest;
 }

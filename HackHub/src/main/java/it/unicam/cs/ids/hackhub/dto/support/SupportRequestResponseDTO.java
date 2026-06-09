@@ -7,5 +7,6 @@ public record SupportRequestResponseDTO(
 		Long hackathonId,
 		Long teamId,
 		String description,
-		LocalDateTime requestedAt) {
+		LocalDateTime requestedAt,
+		SupportResponseDTO response) {
 }

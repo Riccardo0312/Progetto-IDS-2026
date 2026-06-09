@@ -54,8 +54,12 @@ A registered team's request for mentoring help within a specific hackathon.
 _Avoid_: Richiesta generica, ticket
 
 **Richiesta di supporto aperta**:
-A support request that has not yet received a mentor's call proposal.
+A support request that has not yet received a mentor follow-up.
 _Avoid_: Ticket aperto, richiesta non gestita
+
+**Risposta di supporto**:
+A mentor's written answer to a support request.
+_Avoid_: Commento generico, messaggio libero
 
 **Proposta di call**:
 A mentor's single scheduling proposal made in response to a support request.
@@ -94,10 +98,13 @@ leadership.
 - A **Richiesta di supporto** belongs to exactly one **Team** and exactly one **Hackathon**
 - A **Team** creates **Richieste di supporto** only for **Hackathons** it is
   registered in and only while the **Hackathon** is running
+- A **Team** consults only its own **Richieste di supporto** and any related
+  mentor follow-up
 - A **Mentore** handles **Richieste di supporto** only while the **Hackathon** is running
 - A **Richiesta di supporto** receives at most one **Proposta di call**
+- A **Richiesta di supporto** receives at most one **Risposta di supporto**
 - A **Richiesta di supporto aperta** becomes no longer open when it receives a
-  **Proposta di call**
+  **Risposta di supporto** or a **Proposta di call**
 - A **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**
 - A **Mentore** creates **Segnalazioni di violazione** only while the **Hackathon** is running
 - A **Sottomissione** belongs to exactly one **Hackathon** through a team's participation
@@ -122,5 +129,9 @@ leadership.
 - "Richiesta di supporto" could mean a generic team request — resolved: it belongs to a specific **Hackathon** so only assigned **Mentori** handle it.
 - "Durante l'hackathon" was used to describe mentoring timing — resolved: the **Mentore** handles support only while the **Hackathon** is running.
 - "Proporre una call" could allow multiple proposals for one request — resolved: each **Richiesta di supporto** receives at most one **Proposta di call**.
+- "Rispondere a richiesta di supporto" could mean changing the original request text — resolved: the mentor creates a distinct **Risposta di supporto**.
+- "Consulta le richieste di supporto" could mean the mentor queue or the team's
+  own history — resolved: for the **Team**, it means consulting only its own
+  **Richieste di supporto** and their mentor follow-ups.
 - "Segnalare il team" could block later reports for the same team — resolved: a **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**.
 - "Segnalare una violazione" could happen after the event — resolved: the **Mentore** reports violations only while the **Hackathon** is running.

@@ -1,8 +1,11 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
 import it.unicam.cs.ids.hackhub.dto.support.CreateSupportRequestDTO;
+import it.unicam.cs.ids.hackhub.dto.support.CreateSupportResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.support.SupportRequestResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.support.SupportResponseDTO;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
+import it.unicam.cs.ids.hackhub.model.SupportResponse;
 import it.unicam.cs.ids.hackhub.service.interfaces.IMentorService;
 import it.unicam.cs.ids.hackhub.service.interfaces.IMentoringRequestService;
 import it.unicam.cs.ids.hackhub.service.mapper.SupportRequestMapper;
@@ -50,6 +53,29 @@ public class SupportRequestController {
 		return supportRequestMapper.toResponse(supportRequest);
 	}
 
+	@GetMapping("/teams/{teamId}/support-requests")
+	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
+	public List<SupportRequestResponseDTO> getTeamSupportRequests(
+			@PathVariable Long teamId,
+			Authentication authentication) {
+		return mentoringRequestService.getTeamSupportRequests(teamId, authentication.getName()).stream()
+				.map(supportRequestMapper::toResponse)
+				.toList();
+	}
+
+	@GetMapping("/teams/{teamId}/support-requests/{supportRequestId}")
+	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
+	public SupportRequestResponseDTO getTeamSupportRequest(
+			@PathVariable Long teamId,
+			@PathVariable Long supportRequestId,
+			Authentication authentication) {
+		SupportRequest supportRequest = mentoringRequestService.getTeamSupportRequest(
+				teamId,
+				supportRequestId,
+				authentication.getName());
+		return supportRequestMapper.toResponse(supportRequest);
+	}
+
 	@GetMapping("/mentors/{mentorId}/hackathons/{hackathonId}/support-requests")
 	@PreAuthorize(
 			"hasRole('MENTOR') "
@@ -72,10 +98,29 @@ public class SupportRequestController {
 			@PathVariable Long mentorId,
 			@PathVariable Long hackathonId,
 			@PathVariable Long supportRequestId) {
-		SupportRequest supportRequest = mentorService.getAssignedHackathonSupportRequest(
+			SupportRequest supportRequest = mentorService.getAssignedHackathonSupportRequest(
+					mentorId,
+					hackathonId,
+					supportRequestId);
+			return supportRequestMapper.toResponse(supportRequest);
+	}
+
+	@PostMapping("/mentors/{mentorId}/hackathons/{hackathonId}/support-requests/{supportRequestId}/response")
+	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize(
+			"hasRole('MENTOR') "
+					+ "and @hackHubAuthorizationService.isMentorSelf(#mentorId, authentication.name) "
+					+ "and @hackHubAuthorizationService.isAssignedMentor(#hackathonId, authentication.name)")
+	public SupportResponseDTO respondToSupportRequest(
+			@PathVariable Long mentorId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long supportRequestId,
+			@Valid @RequestBody CreateSupportResponseDTO request) {
+		SupportResponse supportResponse = mentorService.respondToSupportRequest(
 				mentorId,
 				hackathonId,
-				supportRequestId);
-		return supportRequestMapper.toResponse(supportRequest);
+				supportRequestId,
+				request.message());
+		return supportRequestMapper.toResponse(supportResponse);
 	}
 }

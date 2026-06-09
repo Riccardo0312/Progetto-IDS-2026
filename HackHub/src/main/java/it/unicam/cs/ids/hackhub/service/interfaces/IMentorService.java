@@ -2,6 +2,7 @@ package it.unicam.cs.ids.hackhub.service.interfaces;
 
 import it.unicam.cs.ids.hackhub.model.MentoringCallProposal;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
+import it.unicam.cs.ids.hackhub.model.SupportResponse;
 import it.unicam.cs.ids.hackhub.model.ViolationReport;
 import java.util.List;
 
@@ -11,6 +12,9 @@ public interface IMentorService {
 
 	SupportRequest getAssignedHackathonSupportRequest(
 			Long mentorId, Long hackathonId, Long supportRequestId);
+
+	SupportResponse respondToSupportRequest(
+			Long mentorId, Long hackathonId, Long supportRequestId, String message);
 
 	MentoringCallProposal proposeCall(Long mentorId, Long hackathonId, Long supportRequestId);
 
