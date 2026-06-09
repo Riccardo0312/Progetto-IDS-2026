@@ -87,8 +87,18 @@ public class HackHubAuthorizationService {
 			return false;
 		}
 		return mentorRepository.findByEmail(principalEmail)
-				.map(m -> mentorRepository.existsByIdAndSupportedHackathonsId(
-						m.getId(), hackathonId))
+					.map(m -> mentorRepository.existsByIdAndSupportedHackathonsId(
+							m.getId(), hackathonId))
+					.orElse(false);
+	}
+
+	/** Il principal è il mentor {@code mentorId}. */
+	public boolean isMentorSelf(Long mentorId, String principalEmail) {
+		if (mentorId == null || principalEmail == null) {
+			return false;
+		}
+		return mentorRepository.findByEmail(principalEmail)
+				.map(mentor -> mentor.getId().equals(mentorId))
 				.orElse(false);
 	}
 

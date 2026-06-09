@@ -8,4 +8,6 @@ public interface SupportRequestRepository extends JpaRepository<SupportRequest, 
 
 	List<SupportRequest> findByHackathonId(Long hackathonId);
 
+	List<SupportRequest> findByHackathonIdAndCallProposalIsNull(Long hackathonId);
+
 }

@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface IMentorService {
 
-	List<SupportRequest> getAssignedHackathonSupportRequests(Long mentorId, Long hackathonId);
+	List<SupportRequest> getOpenAssignedHackathonSupportRequests(Long mentorId, Long hackathonId);
+
+	SupportRequest getAssignedHackathonSupportRequest(
+			Long mentorId, Long hackathonId, Long supportRequestId);
 
 	MentoringCallProposal proposeCall(Long mentorId, Long hackathonId, Long supportRequestId);
 

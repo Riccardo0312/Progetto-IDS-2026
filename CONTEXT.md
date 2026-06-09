@@ -50,8 +50,12 @@ A staff member assigned to an hackathon to support teams during the event.
 _Avoid_: Tutor, Coach
 
 **Richiesta di supporto**:
-A team's request for mentoring help within a specific hackathon.
+A registered team's request for mentoring help within a specific hackathon.
 _Avoid_: Richiesta generica, ticket
+
+**Richiesta di supporto aperta**:
+A support request that has not yet received a mentor's call proposal.
+_Avoid_: Ticket aperto, richiesta non gestita
 
 **Proposta di call**:
 A mentor's single scheduling proposal made in response to a support request.
@@ -88,8 +92,12 @@ leadership.
   the **Giudice** can be changed only via **Sostituzione del giudice**, atomically
 - A **Mentore** is assigned to one or more **Hackathons**
 - A **Richiesta di supporto** belongs to exactly one **Team** and exactly one **Hackathon**
+- A **Team** creates **Richieste di supporto** only for **Hackathons** it is
+  registered in and only while the **Hackathon** is running
 - A **Mentore** handles **Richieste di supporto** only while the **Hackathon** is running
 - A **Richiesta di supporto** receives at most one **Proposta di call**
+- A **Richiesta di supporto aperta** becomes no longer open when it receives a
+  **Proposta di call**
 - A **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**
 - A **Mentore** creates **Segnalazioni di violazione** only while the **Hackathon** is running
 - A **Sottomissione** belongs to exactly one **Hackathon** through a team's participation

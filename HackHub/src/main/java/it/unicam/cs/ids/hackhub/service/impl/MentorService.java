@@ -56,13 +56,27 @@ public class MentorService implements IMentorService {
 	}
 
 	@Override
-	public List<SupportRequest> getAssignedHackathonSupportRequests(
+	public List<SupportRequest> getOpenAssignedHackathonSupportRequests(
 			Long mentorId, Long hackathonId) {
 		findMentorById(mentorId);
 		Hackathon hackathon = findHackathonById(hackathonId);
 		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
 
-		return supportRequestRepository.findByHackathonId(hackathonId);
+		return supportRequestRepository.findByHackathonIdAndCallProposalIsNull(hackathonId);
+	}
+
+	@Override
+	public SupportRequest getAssignedHackathonSupportRequest(
+			Long mentorId, Long hackathonId, Long supportRequestId) {
+		findMentorById(mentorId);
+		Hackathon hackathon = findHackathonById(hackathonId);
+		SupportRequest supportRequest = findSupportRequestById(supportRequestId);
+
+		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
+		validateSupportRequestBelongsToHackathon(supportRequest, hackathonId);
+		validateSupportRequestHasNoCallProposal(supportRequestId);
+
+		return supportRequest;
 	}
 
 	@Override
