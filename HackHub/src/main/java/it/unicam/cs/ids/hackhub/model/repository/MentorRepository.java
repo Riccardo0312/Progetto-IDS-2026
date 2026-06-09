@@ -1,10 +1,13 @@
 package it.unicam.cs.ids.hackhub.model.repository;
 
 import it.unicam.cs.ids.hackhub.model.Mentor;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MentorRepository extends JpaRepository<Mentor, Long> {
 
 	boolean existsByIdAndSupportedHackathonsId(Long mentorId, Long hackathonId);
+
+	Optional<Mentor> findByEmail(String email);
 
 }

@@ -8,6 +8,8 @@ import it.unicam.cs.ids.hackhub.service.interfaces.ISubmissionService;
 import it.unicam.cs.ids.hackhub.service.mapper.SubmissionMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Endpoint REST per il caso d'uso "Il team invia la sottomissione".
  *
- * <p>L'invio è ancorato alla registrazione del team all'hackathon
- * ({@code registrationId}); la modifica è ancorata alla sottomissione stessa
- * ({@code submissionId}). Entrambe le operazioni sono rifiutate dal service se
- * la deadline dell'hackathon è superata.
+ * <p>L'identità del chiamante proviene dal principal JWT, non dal body. La
+ * verifica di membership (leader/membro del team proprietario) resta nel
+ * service, che risponde 403 se il principal non appartiene al team.
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasRole('USER')")
 public class SubmissionController {
 
 	private final ISubmissionService submissionService;
@@ -40,18 +42,28 @@ public class SubmissionController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public SubmissionResponseDTO uploadSubmission(
 			@PathVariable Long registrationId,
-			@Valid @RequestBody UploadSubmissionRequestDTO request) {
+			@Valid @RequestBody UploadSubmissionRequestDTO request,
+			Authentication authentication) {
 		Submission submission = submissionService.uploadSubmission(
-				registrationId, request.userEmail(), request.title(), request.description(), request.projectLink());
+				registrationId,
+				authentication.getName(),
+				request.title(),
+				request.description(),
+				request.projectLink());
 		return submissionMapper.toResponse(submission);
 	}
 
 	@PutMapping("/submissions/{submissionId}")
 	public SubmissionResponseDTO updateSubmission(
 			@PathVariable Long submissionId,
-			@Valid @RequestBody UpdateSubmissionRequestDTO request) {
+			@Valid @RequestBody UpdateSubmissionRequestDTO request,
+			Authentication authentication) {
 		Submission submission = submissionService.updateSubmission(
-				submissionId, request.userEmail(), request.title(), request.description(), request.projectLink());
+				submissionId,
+				authentication.getName(),
+				request.title(),
+				request.description(),
+				request.projectLink());
 		return submissionMapper.toResponse(submission);
 	}
 }

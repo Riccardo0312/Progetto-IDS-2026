@@ -8,6 +8,7 @@ import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/organizers/{organizerId}")
+@PreAuthorize("hasRole('ORGANIZER') "
+		+ "and @hackHubAuthorizationService.isOrganizerSelf(#organizerId, authentication.name)")
 public class OrganizerController {
 
 	private final IOrganizerService organizerService;

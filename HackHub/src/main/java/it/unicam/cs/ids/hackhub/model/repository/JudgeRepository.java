@@ -1,10 +1,13 @@
 package it.unicam.cs.ids.hackhub.model.repository;
 
 import it.unicam.cs.ids.hackhub.model.Judge;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JudgeRepository extends JpaRepository<Judge, Long> {
 
 	boolean existsByIdAndAssignedHackathonsId(Long judgeId, Long hackathonId);
+
+	Optional<Judge> findByEmail(String email);
 
 }
