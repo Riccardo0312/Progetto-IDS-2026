@@ -24,6 +24,9 @@ public class Mentor extends StaffMember {
 	private List<MentoringCallProposal> callProposals = new ArrayList<>();
 
 	@OneToMany(mappedBy = "mentor")
+	private List<SupportResponse> supportResponses = new ArrayList<>();
+
+	@OneToMany(mappedBy = "mentor")
 	private List<ViolationReport> violationReports = new ArrayList<>();
 
 }

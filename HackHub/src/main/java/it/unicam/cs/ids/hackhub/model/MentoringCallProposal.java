@@ -40,6 +40,11 @@ public class MentoringCallProposal {
 	@Column(nullable = false, length = 500)
 	private String bookingLink;
 
+	@NotBlank
+	@Size(max = 2000)
+	@Column(nullable = false, length = 2000)
+	private String proposedSlots;
+
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "mentor_id", nullable = false)

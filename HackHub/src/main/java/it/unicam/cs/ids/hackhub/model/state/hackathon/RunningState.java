@@ -28,6 +28,10 @@ public final class RunningState implements HackathonState {
 	}
 
 	@Override
+	public void ensureSupportRequestsAllowed(Long hackathonId) {
+	}
+
+	@Override
 	public void ensureSubmissionActionsAllowed(Long hackathonId) {
 	}
 

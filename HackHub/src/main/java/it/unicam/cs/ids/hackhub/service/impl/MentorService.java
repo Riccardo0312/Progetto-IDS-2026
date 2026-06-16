@@ -6,6 +6,7 @@ import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.Mentor;
 import it.unicam.cs.ids.hackhub.model.MentoringCallProposal;
 import it.unicam.cs.ids.hackhub.model.SupportRequest;
+import it.unicam.cs.ids.hackhub.model.SupportResponse;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.ViolationReport;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
@@ -13,6 +14,7 @@ import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.MentorRepository;
 import it.unicam.cs.ids.hackhub.model.repository.MentoringCallProposalRepository;
 import it.unicam.cs.ids.hackhub.model.repository.SupportRequestRepository;
+import it.unicam.cs.ids.hackhub.model.repository.SupportResponseRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.ViolationReportRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.ICalendarGateway;
@@ -31,6 +33,7 @@ public class MentorService implements IMentorService {
 	private final HackathonRepository hackathonRepository;
 	private final SupportRequestRepository supportRequestRepository;
 	private final MentoringCallProposalRepository mentoringCallProposalRepository;
+	private final SupportResponseRepository supportResponseRepository;
 	private final TeamRepository teamRepository;
 	private final HackathonRegistrationRepository hackathonRegistrationRepository;
 	private final ViolationReportRepository violationReportRepository;
@@ -41,6 +44,7 @@ public class MentorService implements IMentorService {
 			HackathonRepository hackathonRepository,
 			SupportRequestRepository supportRequestRepository,
 			MentoringCallProposalRepository mentoringCallProposalRepository,
+			SupportResponseRepository supportResponseRepository,
 			TeamRepository teamRepository,
 			HackathonRegistrationRepository hackathonRegistrationRepository,
 			ViolationReportRepository violationReportRepository,
@@ -49,6 +53,7 @@ public class MentorService implements IMentorService {
 		this.hackathonRepository = hackathonRepository;
 		this.supportRequestRepository = supportRequestRepository;
 		this.mentoringCallProposalRepository = mentoringCallProposalRepository;
+		this.supportResponseRepository = supportResponseRepository;
 		this.teamRepository = teamRepository;
 		this.hackathonRegistrationRepository = hackathonRegistrationRepository;
 		this.violationReportRepository = violationReportRepository;
@@ -56,32 +61,77 @@ public class MentorService implements IMentorService {
 	}
 
 	@Override
-	public List<SupportRequest> getAssignedHackathonSupportRequests(
+	public List<SupportRequest> getOpenAssignedHackathonSupportRequests(
 			Long mentorId, Long hackathonId) {
 		findMentorById(mentorId);
 		Hackathon hackathon = findHackathonById(hackathonId);
 		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
 
-		return supportRequestRepository.findByHackathonId(hackathonId);
+		return supportRequestRepository.findByHackathonIdAndCallProposalIsNullAndSupportResponseIsNull(
+				hackathonId);
+	}
+
+	@Override
+	public SupportRequest getAssignedHackathonSupportRequest(
+			Long mentorId, Long hackathonId, Long supportRequestId) {
+		findMentorById(mentorId);
+		Hackathon hackathon = findHackathonById(hackathonId);
+		SupportRequest supportRequest = findSupportRequestById(supportRequestId);
+
+		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
+		validateSupportRequestBelongsToHackathon(supportRequest, hackathonId);
+		validateSupportRequestHasNoFollowUp(supportRequestId);
+
+		return supportRequest;
 	}
 
 	@Override
 	@Transactional
-	public MentoringCallProposal proposeCall(Long mentorId, Long hackathonId, Long supportRequestId) {
+	public SupportResponse respondToSupportRequest(
+			Long mentorId, Long hackathonId, Long supportRequestId, String message) {
+		String normalizedMessage = normalizeRequiredSupportResponseMessage(message);
 		Mentor mentor = findMentorById(mentorId);
 		Hackathon hackathon = findHackathonById(hackathonId);
 		SupportRequest supportRequest = findSupportRequestById(supportRequestId);
 
 		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
 		validateSupportRequestBelongsToHackathon(supportRequest, hackathonId);
-		validateSupportRequestHasNoCallProposal(supportRequestId);
+		validateSupportRequestHasNoFollowUp(supportRequestId);
 
-		String bookingLink = calendarGateway.createBookingLink(supportRequest, mentor);
+		SupportResponse supportResponse = new SupportResponse();
+		supportResponse.setMentor(mentor);
+		supportResponse.setSupportRequest(supportRequest);
+		supportResponse.setMessage(normalizedMessage);
+		supportResponse.setRespondedAt(LocalDateTime.now());
+
+		SupportResponse savedSupportResponse = supportResponseRepository.save(supportResponse);
+		supportRequest.setSupportResponse(savedSupportResponse);
+		mentor.getSupportResponses().add(savedSupportResponse);
+
+		return savedSupportResponse;
+	}
+
+	@Override
+	@Transactional
+	public MentoringCallProposal proposeCall(
+			Long mentorId, Long hackathonId, Long supportRequestId, String proposedSlots) {
+		String normalizedProposedSlots = normalizeRequiredProposedSlots(proposedSlots);
+		Mentor mentor = findMentorById(mentorId);
+		Hackathon hackathon = findHackathonById(hackathonId);
+		SupportRequest supportRequest = findSupportRequestById(supportRequestId);
+
+		validateMentorCanActOnRunningHackathon(mentorId, hackathon);
+		validateSupportRequestBelongsToHackathon(supportRequest, hackathonId);
+		validateSupportRequestHasNoFollowUp(supportRequestId);
+
+		String bookingLink =
+				calendarGateway.createBookingLink(supportRequest, mentor, normalizedProposedSlots);
 		validateBookingLink(bookingLink);
 
 		MentoringCallProposal callProposal = new MentoringCallProposal();
 		callProposal.setMentor(mentor);
 		callProposal.setSupportRequest(supportRequest);
+		callProposal.setProposedSlots(normalizedProposedSlots);
 		callProposal.setBookingLink(bookingLink.strip());
 		callProposal.setProposedAt(LocalDateTime.now());
 
@@ -179,6 +229,18 @@ public class MentorService implements IMentorService {
 		}
 	}
 
+	private void validateSupportRequestHasNoResponse(Long supportRequestId) {
+		if (supportResponseRepository.existsBySupportRequestId(supportRequestId)) {
+			throw new ForbiddenOperationException(
+					"SupportRequest " + supportRequestId + " already has a mentor response");
+		}
+	}
+
+	private void validateSupportRequestHasNoFollowUp(Long supportRequestId) {
+		validateSupportRequestHasNoCallProposal(supportRequestId);
+		validateSupportRequestHasNoResponse(supportRequestId);
+	}
+
 	private void validateTeamRegisteredForHackathon(Long hackathonId, Long teamId) {
 		boolean teamRegisteredForHackathon =
 				hackathonRegistrationRepository.existsByHackathonIdAndTeamId(hackathonId, teamId);
@@ -201,6 +263,22 @@ public class MentorService implements IMentorService {
 		}
 
 		return description.strip();
+	}
+
+	private String normalizeRequiredSupportResponseMessage(String message) {
+		if (message == null || message.isBlank()) {
+			throw new IllegalArgumentException("Support response message must not be blank");
+		}
+
+		return message.strip();
+	}
+
+	private String normalizeRequiredProposedSlots(String proposedSlots) {
+		if (proposedSlots == null || proposedSlots.isBlank()) {
+			throw new IllegalArgumentException("Mentoring call proposed slots must not be blank");
+		}
+
+		return proposedSlots.strip();
 	}
 
 }
