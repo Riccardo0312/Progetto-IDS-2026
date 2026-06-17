@@ -85,6 +85,13 @@ _Avoid_: Recensione, voto
 The act of paying the prize money to the winning **Team** of a **Concluso** hackathon, recorded by the system as an outcome (successful or failed) returned by the external Payment System.
 _Avoid_: Pagamento (the gateway pays; the domain registers the disbursement), Liquidazione
 
+**Guest**:
+An unauthenticated visitor who can consult public, read-only information without
+logging in: the list of **Team**s registered to an **Hackathon**, the total
+registration count, and **Team** details (name, members, registered hackathons).
+A **Guest** cannot access authenticated features.
+_Avoid_: Utente anonimo generico, Visitatore loggato.
+
 **Team Leader**:
 A `TeamMember` with role `TeamRole.LEADER`. Each team has exactly one leader at all times.
 The leader is a full team member with additional permissions: delete the team, invite new
@@ -122,6 +129,9 @@ leadership.
 - An **Erogazione del premio** with esito positivo is final; a failed one can be retried in place
 - A **Team Leader** is a **TeamMember** with role `LEADER`; exactly one per team at all times
 - Only the **Team Leader** can delete the team, send invitations, or remove members
+- A **Guest** consults, without authentication, the registrations and **Team**
+  details of any **Hackathon** regardless of its phase; this consultation is
+  read-only and exposes no sensitive data (no emails)
 
 ## Example dialogue
 

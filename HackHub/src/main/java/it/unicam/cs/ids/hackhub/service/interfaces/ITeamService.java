@@ -26,11 +26,8 @@ public interface ITeamService {
     void deleteTeam(Long teamId, String leaderEmail);
 
     /**
-     * Restituisce i dettagli del team richiesto.
-     *
-     * <p>L'utente identificato da {@code userEmail} deve esistere e appartenere
-     * al team {@code teamId}; in caso contrario l'operazione viene rifiutata.
+     * Restituisce i dettagli pubblici del team. Accessibile senza restrizioni di membership.
      */
-    TeamDetailsDTO viewTeam(Long teamId, String userEmail);
+    TeamDetailsDTO getTeamDetails(Long teamId);
 
 }

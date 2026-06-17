@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Endpoint REST dei team.
- *
- * <p>L'identità dell'attore proviene sempre dal principal JWT
- * ({@code authentication.getName()} = email), mai dal body. Le autorizzazioni
- * sono espresse con {@code @PreAuthorize} + {@code HackHubAuthorizationService}.
- */
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -40,7 +34,7 @@ public class TeamController {
 	public TeamDetailsDTO createTeam(
 			@Valid @RequestBody CreateTeamRequest request, Authentication authentication) {
 		Team team = teamService.createTeam(request.name(), authentication.getName());
-		return teamService.viewTeam(team.getId(), authentication.getName());
+		return teamService.getTeamDetails(team.getId());
 	}
 
 	@PostMapping("/{teamId}/leave")
@@ -60,10 +54,9 @@ public class TeamController {
 		teamService.deleteTeam(teamId, authentication.getName());
 	}
 
-	@PostMapping("/{teamId}/view")
-	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
-	public TeamDetailsDTO viewTeam(@PathVariable Long teamId, Authentication authentication) {
-		return teamService.viewTeam(teamId, authentication.getName());
+	@GetMapping("/{teamId}")
+	public TeamDetailsDTO getTeamDetails(@PathVariable Long teamId) {
+		return teamService.getTeamDetails(teamId);
 	}
 
 	/** Solo il nome: il creatore è il principal JWT. */
