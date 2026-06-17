@@ -73,6 +73,24 @@ _Avoid_: Evento calendar interno, prenotazione confermata
 A mentor's report of a suspected rule violation by a team in a hackathon.
 _Avoid_: Sanzione, penalita
 
+**Squalifica del team**:
+A terminal, irreversible act by the **Organizzatore** that removes a **Team**
+from a single **Hackathon** because of a rule violation. Scoped to one
+**Hackathon**: the **Team** keeps existing and stays in any other **Hackathon**
+it joined. The **HackathonRegistration** record is preserved (no physical
+deletion) and marked as disqualified, carrying a mandatory textual motivation.
+Allowed only while the **Hackathon** is **In corso** or **In valutazione**. It
+does not require a prior **Segnalazione di violazione** — the report is the
+typical trigger, not a precondition. A disqualified **Team**: (1) can no longer
+submit/update its **Sottomissione** or open **Richieste di supporto** for that
+**Hackathon**; (2) is excluded from the leaderboard and cannot be proclaimed
+winner; (3) disappears from the public current-view consultation — neither the
+**Hackathon**'s registration list/count nor the **Team**'s "registered
+hackathons" detail show that participation (see ADR 0005).
+_Avoid_: Ban (it is not platform-wide), Espulsione del giocatore, Cancellazione
+della registrazione (the record stays), Sanzione generica, Reintegro (no
+re-instatement use case exists).
+
 **Sottomissione**:
 The work delivered by a registered team for an hackathon.
 _Avoid_: Submission when writing Italian domain notes
@@ -85,6 +103,13 @@ _Avoid_: Recensione, voto
 The act of paying the prize money to the winning **Team** of a **Concluso** hackathon, recorded by the system as an outcome (successful or failed) returned by the external Payment System.
 _Avoid_: Pagamento (the gateway pays; the domain registers the disbursement), Liquidazione
 
+**Guest**:
+An unauthenticated visitor who can consult public, read-only information without
+logging in: the list of **Team**s registered to an **Hackathon**, the total
+registration count, and **Team** details (name, members, registered hackathons).
+A **Guest** cannot access authenticated features.
+_Avoid_: Utente anonimo generico, Visitatore loggato.
+
 **Team Leader**:
 A `TeamMember` with role `TeamRole.LEADER`. Each team has exactly one leader at all times.
 The leader is a full team member with additional permissions: delete the team, invite new
@@ -92,6 +117,17 @@ members, and remove members. Leadership is modeled as a role on `TeamMember`, no
 separate entity or subclass.
 _Avoid_: `TeamLeader` as a class, `isLeader` as a boolean flag, `creator` as a proxy for
 leadership.
+
+**Invito**:
+A request sent by a **Team Leader** to a **User** asking them to join that
+**Team**. It is scoped to a single **Team** — never to an **Hackathon**: a
+**User** is invited into a **Team**, not into a specific event. An **Invito**
+has a status (pending, accepted, rejected). A pending **Invito** is one the
+recipient has not yet acted on. A **User** consults only the **Inviti** of which
+they are the recipient.
+_Avoid_: Invito all'hackathon (the invite targets a Team, not an event),
+Notifica (no notification system exists), Richiesta di adesione (the leader
+initiates, not the user).
 
 ## Relationships
 
@@ -122,6 +158,16 @@ leadership.
 - An **Erogazione del premio** with esito positivo is final; a failed one can be retried in place
 - A **Team Leader** is a **TeamMember** with role `LEADER`; exactly one per team at all times
 - Only the **Team Leader** can delete the team, send invitations, or remove members
+- An **Invito** belongs to exactly one **Team** and is addressed to exactly one **User** (the recipient)
+- A **User** consults only the **Inviti** of which they are the recipient; a **User** already in a **Team** has no actionable (pending) **Inviti**
+- A **Guest** consults, without authentication, the registrations and **Team**
+  details of any **Hackathon** regardless of its phase; this consultation is
+  read-only and exposes no sensitive data (no emails). The registration list is
+  a **current-view** of teams still in the running: a **Team** disqualified from
+  an **Hackathon** is excluded from that **Hackathon**'s registration list/count
+  and from its own "registered hackathons" detail, even though the underlying
+  record is preserved (see ADR 0005). Phase is not a filter — an **Annullato**
+  **Hackathon** is still consultable.
 
 ## Example dialogue
 

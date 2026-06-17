@@ -71,17 +71,17 @@ class OrganizerServiceImplTest {
 	private OrganizerServiceImpl organizerService;
 
 	@BeforeEach
-	void setUp() {
-		organizerService = new OrganizerServiceImpl(
-				hackathonRepository,
-				organizerRepository,
-				judgeRepository,
-				mentorRepository,
-				prizeDisbursementRepository,
-				paymentGateway,
-				hackathonMapper,
-				prizeDisbursementMapper);
-	}
+	// void setUp() {
+	// 	organizerService = new OrganizerServiceImpl(
+	// 			hackathonRepository,
+	// 			organizerRepository,
+	// 			judgeRepository,
+	// 			mentorRepository,
+	// 			prizeDisbursementRepository,
+	// 			paymentGateway,
+	// 			hackathonMapper,
+	// 			prizeDisbursementMapper);
+	// }
 
 	// ---- proclaimWinner ----
 

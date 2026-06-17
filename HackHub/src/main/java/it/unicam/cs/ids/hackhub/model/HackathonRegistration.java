@@ -2,6 +2,8 @@ package it.unicam.cs.ids.hackhub.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,17 @@ public class HackathonRegistration {
 	private LocalDateTime registrationDate;
 
 	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
+	private RegistrationStatus status = RegistrationStatus.ACTIVE;
+
+	@Column(length = 2000)
+	private String disqualificationReason;
+
+	@Column
+	private LocalDateTime disqualifiedAt;
+
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "hackathon_id", nullable = false)
 	private Hackathon hackathon;
@@ -43,5 +56,9 @@ public class HackathonRegistration {
 
 	@OneToOne(mappedBy = "registration")
 	private Submission submission;
+
+	public boolean isDisqualified() {
+		return status == RegistrationStatus.DISQUALIFIED;
+	}
 
 }

@@ -9,6 +9,7 @@ import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
 import it.unicam.cs.ids.hackhub.service.interfaces.IInvitationService;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +90,17 @@ public class InvitationService implements IInvitationService {
 
         invitation.reject();
         return invitationRepository.save(invitation);
+    }
+
+    @Override
+    public List<Invitation> getPendingInvitations(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
+        if (teamMemberRepository.existsByUserId(user.getId())) {
+            return List.of();
+        }
+        return invitationRepository.findByRecipientIdAndStatusOrderByIdDesc(
+                user.getId(), InvitationStatus.PENDING);
     }
 
     /** Solo il leader del team può inviare inviti. */
