@@ -5,6 +5,7 @@ import it.unicam.cs.ids.hackhub.dto.team.TeamSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
+import it.unicam.cs.ids.hackhub.model.RegistrationStatus;
 import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
@@ -78,7 +79,7 @@ public class GuestServiceImpl implements IGuestService {
             throw new ResourceNotFoundException("Hackathon", hackathonId);
         }
         List<TeamSummaryDTO> teams = hackathonRegistrationRepository
-                .findByHackathonId(hackathonId).stream()
+                .findByHackathonIdAndStatus(hackathonId, RegistrationStatus.ACTIVE).stream()
                 .map(r -> new TeamSummaryDTO(r.getTeam().getId(), r.getTeam().getName()))
                 .toList();
         return new HackathonRegistrationsDTO(teams.size(), teams);

@@ -57,6 +57,7 @@ public class MentoringService implements IMentoringRequestService {
 
         ensureCallerIsTeamMember(registration.getTeam(), userEmail);
         ensureHackathonAcceptsSupportRequests(registration.getHackathon());
+        ensureTeamNotDisqualified(registration);
 
         SupportRequest request = new SupportRequest();
         request.setTeam(registration.getTeam());
@@ -88,6 +89,13 @@ public class MentoringService implements IMentoringRequestService {
     private void ensureHackathonAcceptsSupportRequests(Hackathon hackathon) {
         hackathon.updateStatus();
         hackathon.ensureSupportRequestsAllowed();
+    }
+
+    private void ensureTeamNotDisqualified(HackathonRegistration registration) {
+        if (registration.isDisqualified()) {
+            throw new ForbiddenOperationException(
+                    "Il team è squalificato dall'hackathon e non può inviare richieste di supporto");
+        }
     }
 
     private String normalizeRequiredDescription(String description) {

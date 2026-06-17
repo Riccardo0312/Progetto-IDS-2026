@@ -73,6 +73,24 @@ _Avoid_: Evento calendar interno, prenotazione confermata
 A mentor's report of a suspected rule violation by a team in a hackathon.
 _Avoid_: Sanzione, penalita
 
+**Squalifica del team**:
+A terminal, irreversible act by the **Organizzatore** that removes a **Team**
+from a single **Hackathon** because of a rule violation. Scoped to one
+**Hackathon**: the **Team** keeps existing and stays in any other **Hackathon**
+it joined. The **HackathonRegistration** record is preserved (no physical
+deletion) and marked as disqualified, carrying a mandatory textual motivation.
+Allowed only while the **Hackathon** is **In corso** or **In valutazione**. It
+does not require a prior **Segnalazione di violazione** — the report is the
+typical trigger, not a precondition. A disqualified **Team**: (1) can no longer
+submit/update its **Sottomissione** or open **Richieste di supporto** for that
+**Hackathon**; (2) is excluded from the leaderboard and cannot be proclaimed
+winner; (3) disappears from the public current-view consultation — neither the
+**Hackathon**'s registration list/count nor the **Team**'s "registered
+hackathons" detail show that participation (see ADR 0005).
+_Avoid_: Ban (it is not platform-wide), Espulsione del giocatore, Cancellazione
+della registrazione (the record stays), Sanzione generica, Reintegro (no
+re-instatement use case exists).
+
 **Sottomissione**:
 The work delivered by a registered team for an hackathon.
 _Avoid_: Submission when writing Italian domain notes
@@ -131,7 +149,12 @@ leadership.
 - Only the **Team Leader** can delete the team, send invitations, or remove members
 - A **Guest** consults, without authentication, the registrations and **Team**
   details of any **Hackathon** regardless of its phase; this consultation is
-  read-only and exposes no sensitive data (no emails)
+  read-only and exposes no sensitive data (no emails). The registration list is
+  a **current-view** of teams still in the running: a **Team** disqualified from
+  an **Hackathon** is excluded from that **Hackathon**'s registration list/count
+  and from its own "registered hackathons" detail, even though the underlying
+  record is preserved (see ADR 0005). Phase is not a filter — an **Annullato**
+  **Hackathon** is still consultable.
 
 ## Example dialogue
 

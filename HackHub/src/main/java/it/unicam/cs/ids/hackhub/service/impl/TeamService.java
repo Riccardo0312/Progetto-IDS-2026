@@ -181,6 +181,7 @@ public class TeamService implements ITeamService {
                 .map(this::toUserSummary)
                 .toList();
         List<HackathonSummaryDTO> registeredHackathons = team.getRegistrations().stream()
+                .filter(r -> !r.isDisqualified())
                 .map(HackathonRegistration::getHackathon)
                 .filter(Objects::nonNull)
                 .map(this::toHackathonSummary)

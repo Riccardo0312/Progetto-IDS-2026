@@ -74,4 +74,20 @@ public interface IOrganizerService {
 	 * esiste un tentativo registrato.
 	 */
 	PrizeDisbursementResponseDTO getPrizeDisbursement(Long hackathonId, Long organizerId);
+
+	/**
+	 * Squalifica il team dalla partecipazione a un hackathon specifico (ADR 0005).
+	 *
+	 * <p>Permesso solo in {@code RUNNING} o {@code EVALUATION}. Irreversibile.
+	 * Il record {@link it.unicam.cs.ids.hackhub.model.HackathonRegistration} è
+	 * preservato con stato {@code DISQUALIFIED} e motivazione obbligatoria.
+	 *
+	 * @throws it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException se il
+	 *         team non è iscritto all'hackathon
+	 * @throws it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException se il
+	 *         team è già squalificato
+	 * @throws it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException se
+	 *         la fase non è RUNNING o EVALUATION
+	 */
+	void disqualifyTeam(Long hackathonId, Long organizerId, Long teamId, String reason);
 }
