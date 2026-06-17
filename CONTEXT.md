@@ -118,6 +118,17 @@ separate entity or subclass.
 _Avoid_: `TeamLeader` as a class, `isLeader` as a boolean flag, `creator` as a proxy for
 leadership.
 
+**Invito**:
+A request sent by a **Team Leader** to a **User** asking them to join that
+**Team**. It is scoped to a single **Team** — never to an **Hackathon**: a
+**User** is invited into a **Team**, not into a specific event. An **Invito**
+has a status (pending, accepted, rejected). A pending **Invito** is one the
+recipient has not yet acted on. A **User** consults only the **Inviti** of which
+they are the recipient.
+_Avoid_: Invito all'hackathon (the invite targets a Team, not an event),
+Notifica (no notification system exists), Richiesta di adesione (the leader
+initiates, not the user).
+
 ## Relationships
 
 - A **Giudice** is assigned to one or more **Hackathons**
@@ -147,6 +158,8 @@ leadership.
 - An **Erogazione del premio** with esito positivo is final; a failed one can be retried in place
 - A **Team Leader** is a **TeamMember** with role `LEADER`; exactly one per team at all times
 - Only the **Team Leader** can delete the team, send invitations, or remove members
+- An **Invito** belongs to exactly one **Team** and is addressed to exactly one **User** (the recipient)
+- A **User** consults only the **Inviti** of which they are the recipient; a **User** already in a **Team** has no actionable (pending) **Inviti**
 - A **Guest** consults, without authentication, the registrations and **Team**
   details of any **Hackathon** regardless of its phase; this consultation is
   read-only and exposes no sensitive data (no emails). The registration list is

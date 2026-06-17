@@ -16,6 +16,7 @@ import it.unicam.cs.ids.hackhub.model.repository.InvitationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,5 +109,53 @@ class InvitationServiceTest {
         u.setName("User" + id);
         u.setPassword("password1");
         return u;
+    }
+
+    // --- getPendingInvitations ---
+
+    @Test
+    void getPendingInvitations_returnsOnlyPendingForRecipient() {
+        Invitation inv1 = buildInvitation(1L, outsider, team);
+        Invitation inv2 = buildInvitation(2L, outsider, team);
+
+        when(userRepository.findByEmail("outsider@test.it")).thenReturn(Optional.of(outsider));
+        when(teamMemberRepository.existsByUserId(3L)).thenReturn(false);
+        when(invitationRepository.findByRecipientIdAndStatusOrderByIdDesc(3L, InvitationStatus.PENDING))
+                .thenReturn(List.of(inv2, inv1));
+
+        List<Invitation> result = invitationService.getPendingInvitations("outsider@test.it");
+
+        assertThat(result).hasSize(2).containsExactly(inv2, inv1);
+    }
+
+    @Test
+    void getPendingInvitations_returnsEmptyWhenUserAlreadyInTeam() {
+        when(userRepository.findByEmail("outsider@test.it")).thenReturn(Optional.of(outsider));
+        when(teamMemberRepository.existsByUserId(3L)).thenReturn(true);
+
+        List<Invitation> result = invitationService.getPendingInvitations("outsider@test.it");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getPendingInvitations_returnsEmptyWhenNoInvitations() {
+        when(userRepository.findByEmail("outsider@test.it")).thenReturn(Optional.of(outsider));
+        when(teamMemberRepository.existsByUserId(3L)).thenReturn(false);
+        when(invitationRepository.findByRecipientIdAndStatusOrderByIdDesc(3L, InvitationStatus.PENDING))
+                .thenReturn(List.of());
+
+        List<Invitation> result = invitationService.getPendingInvitations("outsider@test.it");
+
+        assertThat(result).isEmpty();
+    }
+
+    private Invitation buildInvitation(Long id, User recipient, Team team) {
+        Invitation inv = new Invitation();
+        inv.setId(id);
+        inv.setRecipient(recipient);
+        inv.setTeam(team);
+        inv.setStatus(InvitationStatus.PENDING);
+        return inv;
     }
 }
