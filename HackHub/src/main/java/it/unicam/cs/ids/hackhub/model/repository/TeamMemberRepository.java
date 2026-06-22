@@ -20,4 +20,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     long countByTeamIdAndRole(Long teamId, TeamRole role);
 
     Optional<TeamMember> findByTeamIdAndUserId(Long teamId, Long userId);
+
+    void deleteByTeamAndUserId(Long teamId, Long userId);
 }

@@ -205,6 +205,28 @@ public class TeamService implements ITeamService {
                 registeredHackathons);
     }
 
+    @Transactional
+    public void expelMember(Long teamId, String leaderEmail, Long memberId) {
+        // Recupera il team
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+
+        // Controlla che l’utente che fa l’operazione sia il leader
+        User leader = userRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Leader non trovato"));
+
+        if (!teamMemberRepository.existsByTeamIdAndUserIdAndRole(teamId, leader.getId(), TeamRole.LEADER)) {
+            throw new ForbiddenOperationException("Solo il team leader può espellere membri");
+        }
+
+        // Controlla che il membro da espellere faccia parte del team
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Il membro non appartiene al team"));
+
+        // Rimuove il membro dal team
+        teamMemberRepository.delete(member);
+    }
+
     private UserSummaryDTO toUserSummary(TeamMember teamMember) {
         User user = teamMember.getUser();
         return new UserSummaryDTO(user.getId(), user.getName());
