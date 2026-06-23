@@ -122,7 +122,8 @@ leadership.
 - A **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**
 - A **Mentore** creates **Segnalazioni di violazione** only while the **Hackathon** is running
 - The **Segnalazioni di violazione** of an **Hackathon** can be viewed by its
-  **Organizzatore**, its assigned **Giudice**, and its assigned **Mentori**
+  **Organizzatore**, its assigned **Giudice**, its assigned **Mentori**, and the
+  **Team** named in each **Segnalazione di violazione**
 - A **Sottomissione** belongs to exactly one **Hackathon** through a team's participation
 - A **Giudice** can view only existing **Sottomissioni** for assigned **Hackathons** while they are **In valutazione**
 - A **Sottomissione** receives at most one **Valutazione**
@@ -157,6 +158,8 @@ leadership.
   **Richieste di supporto** and their mentor follow-ups.
 - "Segnalare il team" could block later reports for the same team — resolved: a **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**.
 - "Segnalare una violazione" could happen after the event — resolved: the **Mentore** reports violations only while the **Hackathon** is running.
+- "Team interessato" could mean any team registered to the **Hackathon** —
+  resolved: it means the **Team** named in that **Segnalazione di violazione**.
 - "Calcolare il punteggio finale" could imply a separate aggregation step —
   resolved: with exactly one **Giudice** per **Hackathon**, the numeric score in
   the **Valutazione** is already the **Punteggio finale**.

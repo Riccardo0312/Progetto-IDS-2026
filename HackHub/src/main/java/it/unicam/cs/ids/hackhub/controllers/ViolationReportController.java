@@ -19,7 +19,7 @@ public class ViolationReportController {
     }
 
     @GetMapping("/api/hackathons/{hackathonId}/violations")
-    @PreAuthorize("hasAnyRole('ORGANIZER', 'MENTOR', 'JUDGE')")
+    @PreAuthorize("hasAnyRole('USER', 'ORGANIZER', 'MENTOR', 'JUDGE')")
     public List<ViolationReportDTO> viewReports(@PathVariable Long hackathonId,
                                                 Authentication authentication) {
         return violationReportService.viewReportsForHackathon(
