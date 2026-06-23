@@ -1,18 +1,17 @@
 package it.unicam.cs.ids.hackhub.service.interfaces;
 
-import it.unicam.cs.ids.hackhub.model.User;
-import it.unicam.cs.ids.hackhub.model.ViolationReport;
+import it.unicam.cs.ids.hackhub.dto.support.ViolationReportDTO;
 import java.util.List;
 
 public interface IViolationReportService {
 
     /**
      * Restituisce tutte le segnalazioni relative a un hackathon
-     * per un utente autenticato (staff o membro del team).
+     * per lo staff assegnato a quello specifico hackathon.
      *
      * @param hackathonId ID dell'hackathon
-     * @param user utente autenticato
+     * @param userEmail email dell'utente autenticato
      * @return lista di segnalazioni
      */
-    List<ViolationReport> viewReportsForHackathon(Long hackathonId, User user);
+    List<ViolationReportDTO> viewReportsForHackathon(Long hackathonId, String userEmail);
 }

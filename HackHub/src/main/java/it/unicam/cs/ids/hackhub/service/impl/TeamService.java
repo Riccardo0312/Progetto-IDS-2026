@@ -113,7 +113,7 @@ public class TeamService implements ITeamService {
         if (hasBlockingRegistration) {
             throw new IllegalStateException(
                     "Il team è iscritto a uno o più hackathon non in fase di iscrizione. "
-                    + "Impossibile eliminarlo.");
+                            + "Impossibile eliminarlo.");
         }
 
         invitationRepository.deleteByTeamId(teamId);
@@ -183,6 +183,15 @@ public class TeamService implements ITeamService {
         return toTeamDetails(team);
     }
 
+    @Override
+    @Transactional
+    public TeamDetailsDTO viewTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
+
+        return toTeamDetails(team);
+    }
+
     private TeamDetailsDTO toTeamDetails(Team team) {
         UserSummaryDTO teamLeader = team.findLeader()
                 .map(this::toUserSummary)
@@ -205,25 +214,28 @@ public class TeamService implements ITeamService {
                 registeredHackathons);
     }
 
+    @Override
     @Transactional
     public void expelMember(Long teamId, String leaderEmail, Long memberId) {
-        // Recupera il team
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
 
-        // Controlla che l’utente che fa l’operazione sia il leader
         User leader = userRepository.findByEmail(leaderEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Leader non trovato"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", leaderEmail));
 
         if (!teamMemberRepository.existsByTeamIdAndUserIdAndRole(teamId, leader.getId(), TeamRole.LEADER)) {
             throw new ForbiddenOperationException("Solo il team leader può espellere membri");
         }
 
-        // Controlla che il membro da espellere faccia parte del team
         TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Il membro non appartiene al team"));
 
-        // Rimuove il membro dal team
+        if (member.isLeader()) {
+            throw new ForbiddenOperationException(
+                    "Il Team Leader non può essere espulso dal team");
+        }
+
+        team.getMembers().remove(member);
         teamMemberRepository.delete(member);
     }
 

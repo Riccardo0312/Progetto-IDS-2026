@@ -7,11 +7,11 @@ import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.service.interfaces.ITeamService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.boot.actuate.web.exchanges.HttpExchange;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,18 +62,24 @@ public class TeamController {
 		teamService.deleteTeam(teamId, authentication.getName());
 	}
 
+	@GetMapping("/{teamId}")
+	public TeamDetailsDTO viewTeam(@PathVariable Long teamId) {
+		return teamService.viewTeam(teamId);
+	}
+
 	@PostMapping("/{teamId}/view")
 	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
-	public TeamDetailsDTO viewTeam(@PathVariable Long teamId, Authentication authentication) {
+	public TeamDetailsDTO viewOwnTeam(@PathVariable Long teamId, Authentication authentication) {
 		return teamService.viewTeam(teamId, authentication.getName());
 	}
 
 	@PostMapping("/{teamId}/expel")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PreAuthorize("@hackHubAuthorizationService.isTeamLeader(#teamId, authentication.name)")
 	public void expelMember(@PathVariable Long teamId,
 	                        @Valid @RequestBody ExpelMemberRequestDTO request,
-	                        HttpExchange.Principal principal) {
-		teamService.expelMember(teamId, principal.getName(), request.memberId());
+	                        Authentication authentication) {
+		teamService.expelMember(teamId, authentication.getName(), request.memberId());
 	}
 
 	/** Solo il nome: il creatore è il principal JWT. */
