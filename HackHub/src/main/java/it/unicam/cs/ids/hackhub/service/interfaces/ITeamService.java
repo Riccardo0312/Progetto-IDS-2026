@@ -30,4 +30,8 @@ public interface ITeamService {
      */
     TeamDetailsDTO getTeamDetails(Long teamId);
 
+    TeamDetailsDTO viewTeam(Long teamId);
+
+    void expelMember(Long teamId, String leaderEmail, Long memberId);
+
 }

@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
+import it.unicam.cs.ids.hackhub.dto.team.ExpelMemberRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.team.LeaveTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.model.Team;
@@ -55,8 +56,28 @@ public class TeamController {
 	}
 
 	@GetMapping("/{teamId}")
+
+	public TeamDetailsDTO viewTeam(@PathVariable Long teamId) {
+		return teamService.viewTeam(teamId);
+	}
+
+	@PostMapping("/{teamId}/view")
+	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
+	public TeamDetailsDTO viewOwnTeam(@PathVariable Long teamId, Authentication authentication) {
+		return teamService.viewTeam(teamId, authentication.getName());
+
 	public TeamDetailsDTO getTeamDetails(@PathVariable Long teamId) {
 		return teamService.getTeamDetails(teamId);
+
+	}
+
+	@PostMapping("/{teamId}/expel")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PreAuthorize("@hackHubAuthorizationService.isTeamLeader(#teamId, authentication.name)")
+	public void expelMember(@PathVariable Long teamId,
+	                        @Valid @RequestBody ExpelMemberRequestDTO request,
+	                        Authentication authentication) {
+		teamService.expelMember(teamId, authentication.getName(), request.memberId());
 	}
 
 	/** Solo il nome: il creatore è il principal JWT. */

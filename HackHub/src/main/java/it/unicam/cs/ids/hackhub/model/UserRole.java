@@ -17,5 +17,9 @@ public enum UserRole {
     /** Valuta le submission degli hackathon a cui è assegnato. */
     JUDGE,
     /** Operazioni amministrative trasversali. */
-    ADMIN
+    ADMIN;
+
+    public boolean isStaff() {
+        return this == ORGANIZER || this == MENTOR || this == JUDGE;
+    }
 }

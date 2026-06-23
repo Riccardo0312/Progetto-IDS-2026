@@ -113,7 +113,7 @@ public class TeamService implements ITeamService {
         if (hasBlockingRegistration) {
             throw new IllegalStateException(
                     "Il team è iscritto a uno o più hackathon non in fase di iscrizione. "
-                    + "Impossibile eliminarlo.");
+                            + "Impossibile eliminarlo.");
         }
 
         invitationRepository.deleteByTeamId(teamId);
@@ -172,6 +172,15 @@ public class TeamService implements ITeamService {
         return toTeamDetails(team);
     }
 
+    @Override
+    @Transactional
+    public TeamDetailsDTO viewTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
+
+        return toTeamDetails(team);
+    }
+
     private TeamDetailsDTO toTeamDetails(Team team) {
         UserSummaryDTO teamLeader = team.findLeader()
                 .map(this::toUserSummary)
@@ -193,6 +202,31 @@ public class TeamService implements ITeamService {
                 teamLeader,
                 members,
                 registeredHackathons);
+    }
+
+    @Override
+    @Transactional
+    public void expelMember(Long teamId, String leaderEmail, Long memberId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
+
+        User leader = userRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente", leaderEmail));
+
+        if (!teamMemberRepository.existsByTeamIdAndUserIdAndRole(teamId, leader.getId(), TeamRole.LEADER)) {
+            throw new ForbiddenOperationException("Solo il team leader può espellere membri");
+        }
+
+        TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Il membro non appartiene al team"));
+
+        if (member.isLeader()) {
+            throw new ForbiddenOperationException(
+                    "Il Team Leader non può essere espulso dal team");
+        }
+
+        team.getMembers().remove(member);
+        teamMemberRepository.delete(member);
     }
 
     private UserSummaryDTO toUserSummary(TeamMember teamMember) {

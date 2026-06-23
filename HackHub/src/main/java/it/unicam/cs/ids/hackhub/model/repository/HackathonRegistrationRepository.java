@@ -1,9 +1,11 @@
 package it.unicam.cs.ids.hackhub.model.repository;
 
 import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
+
 import it.unicam.cs.ids.hackhub.model.RegistrationStatus;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface HackathonRegistrationRepository extends JpaRepository<HackathonRegistration, Long> {
@@ -15,6 +17,8 @@ public interface HackathonRegistrationRepository extends JpaRepository<Hackathon
 	Optional<HackathonRegistration> findByHackathonIdAndTeamId(Long hackathonId, Long teamId);
 
 	boolean existsByHackathonIdAndTeamId(Long hackathonId, Long teamId);
+
+	List<HackathonRegistration> findByHackathonId(Long hackathonId);
 
 	void deleteByTeamId(Long teamId);
 
