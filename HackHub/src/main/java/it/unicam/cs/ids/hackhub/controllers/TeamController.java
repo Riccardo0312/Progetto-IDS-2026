@@ -19,13 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Endpoint REST dei team.
- *
- * <p>L'identità dell'attore proviene sempre dal principal JWT
- * ({@code authentication.getName()} = email), mai dal body. Le autorizzazioni
- * sono espresse con {@code @PreAuthorize} + {@code HackHubAuthorizationService}.
- */
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -42,7 +35,7 @@ public class TeamController {
 	public TeamDetailsDTO createTeam(
 			@Valid @RequestBody CreateTeamRequest request, Authentication authentication) {
 		Team team = teamService.createTeam(request.name(), authentication.getName());
-		return teamService.viewTeam(team.getId(), authentication.getName());
+		return teamService.getTeamDetails(team.getId());
 	}
 
 	@PostMapping("/{teamId}/leave")
@@ -63,6 +56,7 @@ public class TeamController {
 	}
 
 	@GetMapping("/{teamId}")
+
 	public TeamDetailsDTO viewTeam(@PathVariable Long teamId) {
 		return teamService.viewTeam(teamId);
 	}
@@ -71,6 +65,10 @@ public class TeamController {
 	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
 	public TeamDetailsDTO viewOwnTeam(@PathVariable Long teamId, Authentication authentication) {
 		return teamService.viewTeam(teamId, authentication.getName());
+
+	public TeamDetailsDTO getTeamDetails(@PathVariable Long teamId) {
+		return teamService.getTeamDetails(teamId);
+
 	}
 
 	@PostMapping("/{teamId}/expel")

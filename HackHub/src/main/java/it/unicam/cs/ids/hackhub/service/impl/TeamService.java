@@ -166,20 +166,9 @@ public class TeamService implements ITeamService {
 
     @Override
     @Transactional
-    public TeamDetailsDTO viewTeam(Long teamId, String userEmail) {
+    public TeamDetailsDTO getTeamDetails(Long teamId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team", teamId));
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente", userEmail));
-
-        TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, user.getId())
-                .orElseThrow(() -> new ForbiddenOperationException(
-                        "L'utente non appartiene al team"));
-
-        if (!membership.isLeader() && !membership.isMember()) {
-            throw new ForbiddenOperationException("Solo il Team Leader o i membri possono visualizzare il team");
-        }
-
         return toTeamDetails(team);
     }
 
@@ -201,6 +190,7 @@ public class TeamService implements ITeamService {
                 .map(this::toUserSummary)
                 .toList();
         List<HackathonSummaryDTO> registeredHackathons = team.getRegistrations().stream()
+                .filter(r -> !r.isDisqualified())
                 .map(HackathonRegistration::getHackathon)
                 .filter(Objects::nonNull)
                 .map(this::toHackathonSummary)

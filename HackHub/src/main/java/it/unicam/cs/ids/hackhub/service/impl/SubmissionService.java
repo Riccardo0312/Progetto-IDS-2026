@@ -54,6 +54,7 @@ public class SubmissionService implements ISubmissionService {
 
         ensureCallerIsTeamMember(registration.getTeam(), userEmail);
         ensureHackathonAcceptsSubmissions(registration.getHackathon());
+        ensureTeamNotDisqualified(registration);
 
         if (registration.getSubmission() != null) {
             throw new IllegalStateException(
@@ -82,6 +83,7 @@ public class SubmissionService implements ISubmissionService {
         HackathonRegistration registration = submission.getRegistration();
         ensureCallerIsTeamMember(registration.getTeam(), userEmail);
         ensureHackathonAcceptsSubmissions(registration.getHackathon());
+        ensureTeamNotDisqualified(registration);
 
         submission.setTitle(title);
         submission.setDescription(description);
@@ -111,5 +113,12 @@ public class SubmissionService implements ISubmissionService {
     private void ensureHackathonAcceptsSubmissions(Hackathon hackathon) {
         hackathon.updateStatus();
         hackathon.ensureSubmissionActionsAllowed();
+    }
+
+    private void ensureTeamNotDisqualified(HackathonRegistration registration) {
+        if (registration.isDisqualified()) {
+            throw new ForbiddenOperationException(
+                    "Il team è squalificato dall'hackathon e non può gestire la sottomissione");
+        }
     }
 }

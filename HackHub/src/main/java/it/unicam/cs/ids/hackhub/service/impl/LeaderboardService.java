@@ -60,10 +60,14 @@ public class LeaderboardService implements ILeaderboardService {
     private List<LeaderboardEntryDTO> buildEntries(List<Evaluation> evaluations) {
         List<LeaderboardEntryDTO> entries = new ArrayList<>();
         int position = 1;
-        for (int i = 0; i < evaluations.size(); i++) {
-            Evaluation eval = evaluations.get(i);
+        // filter out disqualified teams (ADR 0005)
+        List<Evaluation> active = evaluations.stream()
+                .filter(e -> !e.getSubmission().getRegistration().isDisqualified())
+                .toList();
+        for (int i = 0; i < active.size(); i++) {
+            Evaluation eval = active.get(i);
 
-            if (i > 0 && eval.getScore() < evaluations.get(i - 1).getScore()) {
+            if (i > 0 && eval.getScore() < active.get(i - 1).getScore()) {
                 position = i + 1;
             }
 

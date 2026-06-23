@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
+import it.unicam.cs.ids.hackhub.dto.hackathon.DisqualifyTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
@@ -136,6 +137,20 @@ public class OrganizerController {
 			@PathVariable Long organizerId,
 			@PathVariable Long hackathonId) {
 		return organizerService.getMentorsByHackathon(hackathonId, organizerId);
+	}
+
+	/**
+	 * Squalifica un team da un hackathon specifico. Permesso solo in RUNNING o
+	 * EVALUATION. Irreversibile (ADR 0005).
+	 */
+	@PostMapping("/hackathons/{hackathonId}/teams/{teamId}/disqualification")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void disqualifyTeam(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId,
+			@PathVariable Long teamId,
+			@Valid @RequestBody DisqualifyTeamRequestDTO request) {
+		organizerService.disqualifyTeam(hackathonId, organizerId, teamId, request.reason());
 	}
 
 }

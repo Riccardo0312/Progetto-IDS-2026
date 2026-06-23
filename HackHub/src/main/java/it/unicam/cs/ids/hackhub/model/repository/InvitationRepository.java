@@ -1,6 +1,8 @@
 package it.unicam.cs.ids.hackhub.model.repository;
 
 import it.unicam.cs.ids.hackhub.model.Invitation;
+import it.unicam.cs.ids.hackhub.model.InvitationStatus;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
     void deleteByTeamId(Long teamId);
+
+    List<Invitation> findByRecipientIdAndStatusOrderByIdDesc(Long recipientId, InvitationStatus status);
 }

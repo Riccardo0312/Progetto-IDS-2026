@@ -10,6 +10,7 @@ import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;
 import it.unicam.cs.ids.hackhub.exception.PrizeDisbursementFailedException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
+import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.Judge;
 import it.unicam.cs.ids.hackhub.model.Mentor;
@@ -17,8 +18,10 @@ import it.unicam.cs.ids.hackhub.model.Organizer;
 import it.unicam.cs.ids.hackhub.model.PaymentResult;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
+import it.unicam.cs.ids.hackhub.model.RegistrationStatus;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.User;
+import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.JudgeRepository;
 import it.unicam.cs.ids.hackhub.model.repository.MentorRepository;
@@ -45,6 +48,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
     private final JudgeRepository judgeRepository;
     private final MentorRepository mentorRepository;
     private final PrizeDisbursementRepository prizeDisbursementRepository;
+    private final HackathonRegistrationRepository hackathonRegistrationRepository;
     private final IPaymentGateway paymentGateway;
     private final HackathonMapper hackathonMapper;
     private final PrizeDisbursementMapper prizeDisbursementMapper;
@@ -55,6 +59,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
             JudgeRepository judgeRepository,
             MentorRepository mentorRepository,
             PrizeDisbursementRepository prizeDisbursementRepository,
+            HackathonRegistrationRepository hackathonRegistrationRepository,
             IPaymentGateway paymentGateway,
             HackathonMapper hackathonMapper,
             PrizeDisbursementMapper prizeDisbursementMapper) {
@@ -63,6 +68,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         this.judgeRepository = judgeRepository;
         this.mentorRepository = mentorRepository;
         this.prizeDisbursementRepository = prizeDisbursementRepository;
+        this.hackathonRegistrationRepository = hackathonRegistrationRepository;
         this.paymentGateway = paymentGateway;
         this.hackathonMapper = hackathonMapper;
         this.prizeDisbursementMapper = prizeDisbursementMapper;
@@ -119,9 +125,16 @@ public class OrganizerServiceImpl implements IOrganizerService {
     public void proclaimWinner(Long hackathonId, Team winningTeam) {
         Hackathon hackathon = findHackathonById(hackathonId);
 
-        // La proclamazione del vincitore conclude l'hackathon. L'erogazione del
-        // premio è un caso d'uso separato (disbursePrize), invocato dall'organizzatore
-        // in un secondo momento.
+        hackathonRegistrationRepository
+                .findByHackathonIdAndTeamId(hackathonId, winningTeam.getId())
+                .ifPresent(reg -> {
+                    if (reg.isDisqualified()) {
+                        throw new ForbiddenOperationException(
+                                "Il team " + winningTeam.getId()
+                                        + " è squalificato e non può essere proclamato vincitore");
+                    }
+                });
+
         hackathon.concludeWith(winningTeam);
         hackathonRepository.save(hackathon);
     }
@@ -367,5 +380,40 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 staffMember.getId(),
                 staffMember.getName(),
                 staffMember.getEmail());
+    }
+
+    @Override
+    @Transactional
+    public void disqualifyTeam(Long hackathonId, Long organizerId, Long teamId, String reason) {
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("La motivazione della squalifica è obbligatoria");
+        }
+        Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        ensureHackathonAllowsDisqualification(hackathon);
+
+        HackathonRegistration registration = hackathonRegistrationRepository
+                .findByHackathonIdAndTeamId(hackathonId, teamId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Il team " + teamId + " non è iscritto all'hackathon " + hackathonId));
+
+        if (registration.isDisqualified()) {
+            throw new ForbiddenOperationException(
+                    "Il team " + teamId + " è già squalificato dall'hackathon " + hackathonId);
+        }
+
+        registration.setStatus(RegistrationStatus.DISQUALIFIED);
+        registration.setDisqualificationReason(reason.strip());
+        registration.setDisqualifiedAt(LocalDateTime.now());
+        hackathonRegistrationRepository.save(registration);
+    }
+
+    private void ensureHackathonAllowsDisqualification(Hackathon hackathon) {
+        HackathonStatus status = hackathon.getStatus();
+        if (status != HackathonStatus.RUNNING && status != HackathonStatus.EVALUATION) {
+            throw new InvalidHackathonStateException(
+                    hackathon.getId(), status,
+                    HackathonStatus.RUNNING, HackathonStatus.EVALUATION);
+        }
     }
 }

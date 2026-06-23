@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.config;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
