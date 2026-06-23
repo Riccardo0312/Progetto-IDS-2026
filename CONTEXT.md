@@ -81,6 +81,14 @@ _Avoid_: Submission when writing Italian domain notes
 The judge's written judgment and numeric score for a submitted work.
 _Avoid_: Recensione, voto
 
+**Punteggio finale**:
+The numeric result assigned to a **Sottomissione** by the single **Giudice** of an **Hackathon**.
+_Avoid_: Media dei voti, punteggio calcolato separatamente
+
+**Classifica finale**:
+The ordered ranking of eligible teams in an **Hackathon**, based on each team's **Punteggio finale**.
+_Avoid_: Classifica parziale, leaderboard provvisoria
+
 **Erogazione del premio**:
 The act of paying the prize money to the winning **Team** of a **Concluso** hackathon, recorded by the system as an outcome (successful or failed) returned by the external Payment System.
 _Avoid_: Pagamento (the gateway pays; the domain registers the disbursement), Liquidazione
@@ -119,6 +127,10 @@ leadership.
 - A **Giudice** can view only existing **Sottomissioni** for assigned **Hackathons** while they are **In valutazione**
 - A **Sottomissione** receives at most one **Valutazione**
 - A **Valutazione** belongs to exactly one **Sottomissione**
+- A **Valutazione** determines exactly one **Punteggio finale** because an
+  **Hackathon** has exactly one **Giudice**
+- A **Classifica finale** includes only eligible teams whose **Sottomissione**
+  has a **Valutazione**
 - An **Hackathon** becomes **Concluso** only after its **Sottomissioni** have been judged
 - An **Erogazione del premio** is recorded for at most one **Concluso** hackathon
 - An **Erogazione del premio** with esito positivo is final; a failed one can be retried in place
@@ -145,3 +157,6 @@ leadership.
   **Richieste di supporto** and their mentor follow-ups.
 - "Segnalare il team" could block later reports for the same team — resolved: a **Team** can receive multiple **Segnalazioni di violazione** in the same **Hackathon**.
 - "Segnalare una violazione" could happen after the event — resolved: the **Mentore** reports violations only while the **Hackathon** is running.
+- "Calcolare il punteggio finale" could imply a separate aggregation step —
+  resolved: with exactly one **Giudice** per **Hackathon**, the numeric score in
+  the **Valutazione** is already the **Punteggio finale**.

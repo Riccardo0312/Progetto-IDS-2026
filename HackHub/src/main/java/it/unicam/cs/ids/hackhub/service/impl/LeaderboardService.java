@@ -6,6 +6,7 @@ import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Evaluation;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
+import it.unicam.cs.ids.hackhub.model.HackathonRegistration;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
 import it.unicam.cs.ids.hackhub.model.repository.EvaluationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
@@ -37,6 +38,7 @@ public class LeaderboardService implements ILeaderboardService {
 
         hackathon.updateStatus();
         validateLeaderboardAvailable(hackathon);
+        validateFinalScoresAvailable(hackathon);
 
         List<Evaluation> evaluations =
                 evaluationRepository.findByHackathonIdOrderByScoreDesc(hackathonId);
@@ -44,6 +46,25 @@ public class LeaderboardService implements ILeaderboardService {
         List<LeaderboardEntryDTO> entries = buildEntries(evaluations);
 
         return new LeaderboardResponseDTO(hackathon.getId(), hackathon.getName(), entries);
+    }
+
+
+    private void validateFinalScoresAvailable(Hackathon hackathon) {
+        boolean hasEligibleTeamWithoutFinalScore = hackathon.getRegistrations().stream()
+                .filter(registration -> !registration.isDisqualified())
+                .anyMatch(this::doesNotHaveFinalScore);
+
+        if (hasEligibleTeamWithoutFinalScore) {
+            throw new ForbiddenOperationException(
+                    "La classifica dell'hackathon " + hackathon.getId()
+                            + " non è ancora definitiva: ci sono sottomissioni non valutate");
+        }
+    }
+
+
+    private boolean doesNotHaveFinalScore(HackathonRegistration registration) {
+        return registration.getSubmission() == null
+                || registration.getSubmission().getEvaluation() == null;
     }
 
 
