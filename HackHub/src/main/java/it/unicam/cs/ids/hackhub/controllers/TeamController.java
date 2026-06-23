@@ -56,19 +56,14 @@ public class TeamController {
 	}
 
 	@GetMapping("/{teamId}")
-
-	public TeamDetailsDTO viewTeam(@PathVariable Long teamId) {
-		return teamService.viewTeam(teamId);
+	public TeamDetailsDTO getTeamDetails(@PathVariable Long teamId) {
+		return teamService.getTeamDetails(teamId);
 	}
 
 	@PostMapping("/{teamId}/view")
 	@PreAuthorize("@hackHubAuthorizationService.isTeamMember(#teamId, authentication.name)")
 	public TeamDetailsDTO viewOwnTeam(@PathVariable Long teamId, Authentication authentication) {
-		return teamService.viewTeam(teamId, authentication.getName());
-
-	public TeamDetailsDTO getTeamDetails(@PathVariable Long teamId) {
-		return teamService.getTeamDetails(teamId);
-
+		return teamService.viewTeam(teamId);
 	}
 
 	@PostMapping("/{teamId}/expel")
