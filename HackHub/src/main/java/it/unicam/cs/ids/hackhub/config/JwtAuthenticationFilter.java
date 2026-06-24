@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.hackhub.config;
 
 import it.unicam.cs.ids.hackhub.security.JwtService;
+import it.unicam.cs.ids.hackhub.security.TokenRevocationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,10 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
+	private final TokenRevocationService tokenRevocationService;
 
-	public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+	public JwtAuthenticationFilter(
+			JwtService jwtService,
+			UserDetailsService userDetailsService,
+			TokenRevocationService tokenRevocationService) {
 		this.jwtService = jwtService;
 		this.userDetailsService = userDetailsService;
+		this.tokenRevocationService = tokenRevocationService;
 	}
 
 	@Override
@@ -56,7 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			final String email = jwtService.extractUsername(token);
 			if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-				if (jwtService.isTokenValid(token, userDetails)) {
+				if (jwtService.isTokenValid(token, userDetails)
+						&& !tokenRevocationService.isRevoked(token)) {
 					UsernamePasswordAuthenticationToken authToken =
 							new UsernamePasswordAuthenticationToken(
 									userDetails, null, userDetails.getAuthorities());

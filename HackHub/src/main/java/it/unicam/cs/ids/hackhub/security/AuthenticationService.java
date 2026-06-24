@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * Orchestratore di registrazione e login.
@@ -30,18 +31,21 @@ public class AuthenticationService {
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
 	private final UserMapper userMapper;
+	private final TokenRevocationService tokenRevocationService;
 
 	public AuthenticationService(
 			HackHubUserFactory userFactory,
 			UserRepository userRepository,
 			JwtService jwtService,
 			AuthenticationManager authenticationManager,
-			UserMapper userMapper) {
+			UserMapper userMapper,
+			TokenRevocationService tokenRevocationService) {
 		this.userFactory = userFactory;
 		this.userRepository = userRepository;
 		this.jwtService = jwtService;
 		this.authenticationManager = authenticationManager;
 		this.userMapper = userMapper;
+		this.tokenRevocationService = tokenRevocationService;
 	}
 
 	@Transactional
@@ -71,5 +75,12 @@ public class AuthenticationService {
 				.orElseThrow(() -> new UsernameNotFoundException(
 						"Utente non trovato: " + email));
 		return userMapper.toCurrentUser(user);
+	}
+
+	@Transactional
+	public void logout(String authorizationHeader) {
+		if (!StringUtils.hasText(authorizationHeader)
+				|| !authorizationHeader.startsWith("Bearer ")) return;
+		tokenRevocationService.revoke(authorizationHeader.substring(7));
 	}
 }

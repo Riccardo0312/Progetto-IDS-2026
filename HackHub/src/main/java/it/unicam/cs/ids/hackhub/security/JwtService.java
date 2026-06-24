@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,11 +47,16 @@ public class JwtService {
 		long now = System.currentTimeMillis();
 		return Jwts.builder()
 				.claims(extraClaims)
+				.id(UUID.randomUUID().toString())
 				.subject(userDetails.getUsername())
 				.issuedAt(new Date(now))
 				.expiration(new Date(now + accessTokenExpiration))
 				.signWith(getSignInKey())
 				.compact();
+	}
+
+	public String extractJti(String token) {
+		return extractClaim(token, Claims::getId);
 	}
 
 	/** Token valido se il subject coincide con lo username e non è scaduto. */
