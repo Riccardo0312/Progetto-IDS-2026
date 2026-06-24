@@ -51,7 +51,10 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/logout")
-	public Map<String, String> logout() {
-		return Map.of("message", "Logout effettuato. Scarta il token JWT lato client.");
+	public Map<String, String> logout(
+			@org.springframework.web.bind.annotation.RequestHeader("Authorization")
+			String authorizationHeader) {
+		authenticationService.logout(authorizationHeader);
+		return Map.of("message", "Logout effettuato.");
 	}
 }
