@@ -31,6 +31,7 @@ public class JudgeService implements IJudgeService {
 	private final SubmissionRepository submissionRepository;
 	private final EvaluationRepository evaluationRepository;
 	private final EvaluationRequestValidator evaluationRequestValidator;
+	private final EvaluationInputValidator evaluationInputValidator;
 
 	public JudgeService(
 			JudgeRepository judgeRepository,
@@ -47,6 +48,7 @@ public class JudgeService implements IJudgeService {
 		this.submissionRepository = submissionRepository;
 		this.evaluationRepository = evaluationRepository;
 		this.evaluationRequestValidator = judgeAssignedToHackathonValidator;
+		this.evaluationInputValidator = evaluationInputValidator;
 
 		judgeAssignedToHackathonValidator
 				.setNext(hackathonInEvaluationValidator)
@@ -62,6 +64,15 @@ public class JudgeService implements IJudgeService {
 		validateJudgingAccess(judgeId, hackathon);
 
 		return submissionRepository.findByRegistrationHackathonId(hackathonId);
+	}
+
+	@Override
+	public List<Submission> getEvaluatedSubmissions(Long judgeId, Long hackathonId) {
+		findJudgeById(judgeId);
+		Hackathon hackathon = findHackathonById(hackathonId);
+		validateJudgingAccess(judgeId, hackathon);
+
+		return submissionRepository.findEvaluatedByJudge(hackathonId, judgeId);
 	}
 
 	@Override
@@ -90,6 +101,35 @@ public class JudgeService implements IJudgeService {
 		judge.getEvaluations().add(savedEvaluation);
 
 		return savedEvaluation;
+	}
+
+	@Override
+	@Transactional
+	public Evaluation updateEvaluation(
+			Long judgeId, Long hackathonId, Long submissionId, String judgment, int score) {
+		Judge judge = findJudgeById(judgeId);
+		Hackathon hackathon = findHackathonById(hackathonId);
+		Submission submission = findSubmissionById(submissionId);
+
+		validateJudgingAccess(judgeId, hackathon);
+		ensureSubmissionBelongsToHackathon(submissionId, hackathonId);
+
+		Evaluation evaluation = findEvaluationBySubmissionId(submissionId);
+		ensureEvaluationOwnedByJudge(evaluation, judgeId);
+
+		String normalizedJudgment = normalizeJudgment(judgment);
+
+		EvaluationRequestContext validationContext =
+				new EvaluationRequestContext(
+						judgeId, hackathonId, submissionId, judge, hackathon, submission, normalizedJudgment, score);
+		// Riusa solo la validazione di input (giudizio non vuoto, <= 2000, score 0..10).
+		// La guardia "non gia valutata" non si applica alla correzione.
+		evaluationInputValidator.validate(validationContext);
+
+		evaluation.setJudgment(normalizedJudgment);
+		evaluation.setScore(score);
+
+		return evaluationRepository.save(evaluation);
 	}
 
 	private Judge findJudgeById(Long judgeId) {
@@ -126,6 +166,31 @@ public class JudgeService implements IJudgeService {
 		}
 
 		hackathon.ensureJudgingActionsAllowed();
+	}
+
+	private void ensureSubmissionBelongsToHackathon(Long submissionId, Long hackathonId) {
+		boolean belongs =
+				submissionRepository.existsByIdAndRegistrationHackathonId(submissionId, hackathonId);
+		if (!belongs) {
+			throw new ForbiddenOperationException(
+					"Submission " + submissionId + " does not belong to hackathon " + hackathonId);
+		}
+	}
+
+	private Evaluation findEvaluationBySubmissionId(Long submissionId) {
+		return evaluationRepository
+				.findBySubmissionId(submissionId)
+				.orElseThrow(
+						() ->
+								new ResourceNotFoundException(
+										"No evaluation found for submission " + submissionId));
+	}
+
+	private void ensureEvaluationOwnedByJudge(Evaluation evaluation, Long judgeId) {
+		if (evaluation.getJudge() == null || !evaluation.getJudge().getId().equals(judgeId)) {
+			throw new ForbiddenOperationException(
+					"Judge " + judgeId + " is not the author of evaluation " + evaluation.getId());
+		}
 	}
 
 	private String normalizeJudgment(String judgment) {

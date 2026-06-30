@@ -44,6 +44,18 @@ public class GlobalExceptionHandler {
 		return build(HttpStatus.CONFLICT, ex.getMessage());
 	}
 
+	@ExceptionHandler(DuplicateEvaluationException.class)
+	public ResponseEntity<Map<String, Object>> handleDuplicateEvaluation(
+			DuplicateEvaluationException ex) {
+		return build(HttpStatus.CONFLICT, ex.getMessage());
+	}
+
+	@ExceptionHandler(InvalidEvaluationException.class)
+	public ResponseEntity<Map<String, Object>> handleInvalidEvaluation(
+			InvalidEvaluationException ex) {
+		return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+	}
+
 	@ExceptionHandler(PrizeAlreadyDisbursedException.class)
 	public ResponseEntity<Map<String, Object>> handleAlreadyDisbursed(
 			PrizeAlreadyDisbursedException ex) {

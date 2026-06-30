@@ -112,4 +112,14 @@ public class HackHubAuthorizationService {
 						j.getId(), hackathonId))
 				.orElse(false);
 	}
+
+	/** Il principal è il judge {@code judgeId}. */
+	public boolean isJudgeSelf(Long judgeId, String principalEmail) {
+		if (judgeId == null || principalEmail == null) {
+			return false;
+		}
+		return judgeRepository.findByEmail(principalEmail)
+				.map(judge -> judge.getId().equals(judgeId))
+				.orElse(false);
+	}
 }
