@@ -58,6 +58,8 @@ public class SecurityConfig {
 								"/v3/api-docs/**",
 								"/swagger-resources/**",
 								"/webjars/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/hackathons").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/hackathons/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/hackathons/*/registrations").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/teams/*").permitAll()
 						.anyRequest().authenticated())

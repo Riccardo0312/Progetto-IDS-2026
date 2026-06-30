@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonDetailDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonListItemDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonRegistrationsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.TeamSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
@@ -12,6 +14,7 @@ import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
 import java.util.List;
 import it.unicam.cs.ids.hackhub.service.interfaces.IGuestService;
+import it.unicam.cs.ids.hackhub.service.mapper.HackathonMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,42 +25,47 @@ public class GuestServiceImpl implements IGuestService {
     private final HackathonRepository hackathonRepository;
     private final UserRepository userRepository;
     private final HackathonRegistrationRepository hackathonRegistrationRepository;
+    private final HackathonMapper hackathonMapper;
 
     public GuestServiceImpl(HackathonRepository hackathonRepository,
                             UserRepository userRepository,
-                            HackathonRegistrationRepository hackathonRegistrationRepository) {
+                            HackathonRegistrationRepository hackathonRegistrationRepository,
+                            HackathonMapper hackathonMapper) {
         this.hackathonRepository = hackathonRepository;
         this.userRepository = userRepository;
         this.hackathonRegistrationRepository = hackathonRegistrationRepository;
+        this.hackathonMapper = hackathonMapper;
     }
 
     @Override
-    public List<Hackathon> getAllHackathons() {
-        List<Hackathon> hackathons = hackathonRepository.findAll();
-        hackathons.forEach(Hackathon::updateStatus);
-        return hackathons;
-    }
-
-    @Override
-    public List<Hackathon> getHackathonsByStatus(HackathonStatus status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Lo stato non può essere null");
-        }
-        return hackathonRepository.findAll().stream()
+    public List<HackathonListItemDTO> getAllHackathons() {
+        return hackathonRepository.findAllByOrderByStartDateAsc().stream()
                 .peek(Hackathon::updateStatus)
-                .filter(hackathon -> hackathon.getStatus() == status)
+                .map(hackathonMapper::toListItem)
                 .toList();
     }
 
     @Override
-    public Hackathon getHackathonById(Long hackathonId) {
+    public List<HackathonListItemDTO> getHackathonsByStatus(HackathonStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Lo stato non può essere null");
+        }
+        return hackathonRepository.findAllByOrderByStartDateAsc().stream()
+                .peek(Hackathon::updateStatus)
+                .filter(hackathon -> hackathon.getStatus() == status)
+                .map(hackathonMapper::toListItem)
+                .toList();
+    }
+
+    @Override
+    public HackathonDetailDTO getHackathonById(Long hackathonId) {
         if (hackathonId == null) {
             throw new IllegalArgumentException("L'ID non può essere null");
         }
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
         hackathon.updateStatus();
-        return hackathon;
+        return hackathonMapper.toDetail(hackathon);
     }
 
     @Transactional

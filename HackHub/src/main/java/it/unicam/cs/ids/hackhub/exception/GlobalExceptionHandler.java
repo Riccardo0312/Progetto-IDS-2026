@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * Mappa le eccezioni di dominio su risposte HTTP coerenti per le API REST.
@@ -71,6 +72,22 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
 		return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+	}
+
+	/**
+	 * Binding di un parametro fallito (es. valore non valido per un enum come
+	 * {@code status}). Restituisce 400 con messaggio coerente, elencando i
+	 * valori ammessi quando il tipo atteso è un enum.
+	 */
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<Map<String, Object>> handleTypeMismatch(
+			MethodArgumentTypeMismatchException ex) {
+		Class<?> required = ex.getRequiredType();
+		String message = "Valore non valido per '" + ex.getName() + "': " + ex.getValue();
+		if (required != null && required.isEnum()) {
+			message += ". Valori ammessi: " + java.util.Arrays.toString(required.getEnumConstants());
+		}
+		return build(HttpStatus.BAD_REQUEST, message);
 	}
 
 	@ExceptionHandler(IllegalStateException.class)

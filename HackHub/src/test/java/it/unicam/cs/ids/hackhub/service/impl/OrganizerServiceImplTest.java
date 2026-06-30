@@ -29,6 +29,7 @@ import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
 import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
+import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRepository;
 import it.unicam.cs.ids.hackhub.model.repository.JudgeRepository;
 import it.unicam.cs.ids.hackhub.model.repository.MentorRepository;
@@ -64,6 +65,7 @@ class OrganizerServiceImplTest {
 	@Mock private JudgeRepository judgeRepository;
 	@Mock private MentorRepository mentorRepository;
 	@Mock private PrizeDisbursementRepository prizeDisbursementRepository;
+	@Mock private HackathonRegistrationRepository hackathonRegistrationRepository;
 	@Mock private IPaymentGateway paymentGateway;
 	@Mock private HackathonMapper hackathonMapper;
 	@Mock private PrizeDisbursementMapper prizeDisbursementMapper;
@@ -71,17 +73,18 @@ class OrganizerServiceImplTest {
 	private OrganizerServiceImpl organizerService;
 
 	@BeforeEach
-	// void setUp() {
-	// 	organizerService = new OrganizerServiceImpl(
-	// 			hackathonRepository,
-	// 			organizerRepository,
-	// 			judgeRepository,
-	// 			mentorRepository,
-	// 			prizeDisbursementRepository,
-	// 			paymentGateway,
-	// 			hackathonMapper,
-	// 			prizeDisbursementMapper);
-	// }
+	void setUp() {
+		organizerService = new OrganizerServiceImpl(
+				hackathonRepository,
+				organizerRepository,
+				judgeRepository,
+				mentorRepository,
+				prizeDisbursementRepository,
+				hackathonRegistrationRepository,
+				paymentGateway,
+				hackathonMapper,
+				prizeDisbursementMapper);
+	}
 
 	// ---- proclaimWinner ----
 
