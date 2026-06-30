@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.mapper;
 
+import it.unicam.cs.ids.hackhub.dto.hackathon.CreateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonDetailDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonListItemDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
@@ -39,5 +40,22 @@ public interface HackathonMapper {
 			return null;
 		}
 		return new TeamSummaryDTO(team.getId(), team.getName());
+	}
+
+	/**
+	 * Costruisce una nuova entità {@code Hackathon} dai soli parametri
+	 * descrittivi/logistici della richiesta. Lo staff (organizzatore, giudice,
+	 * mentori) viene associato dal service, non da questo mapping.
+	 */
+	default Hackathon toEntity(CreateHackathonRequestDTO request) {
+		return new Hackathon(
+				request.name(),
+				request.rules(),
+				request.location(),
+				request.prizeMoney(),
+				request.maxTeamSize(),
+				request.registrationDeadline(),
+				request.startDate(),
+				request.endDate());
 	}
 }

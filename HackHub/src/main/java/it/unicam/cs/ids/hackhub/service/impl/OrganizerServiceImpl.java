@@ -19,6 +19,7 @@ import it.unicam.cs.ids.hackhub.model.PaymentResult;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
 import it.unicam.cs.ids.hackhub.model.RegistrationStatus;
+import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.User;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
@@ -84,6 +85,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         if (mentorIds == null || mentorIds.isEmpty()) {
             throw new IllegalArgumentException("Almeno un mentore è obbligatorio");
         }
+        validateSchedule(hackathon, LocalDate.now());
 
         Organizer organizer = organizerRepository.findById(organizerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organizzatore", organizerId));
@@ -122,20 +124,22 @@ public class OrganizerServiceImpl implements IOrganizerService {
 
     @Override
     @Transactional
-    public void proclaimWinner(Long hackathonId, Team winningTeam) {
+    public void proclaimWinner(Long hackathonId, Long organizerId, Long teamId) {
         Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
 
-        hackathonRegistrationRepository
-                .findByHackathonIdAndTeamId(hackathonId, winningTeam.getId())
-                .ifPresent(reg -> {
-                    if (reg.isDisqualified()) {
-                        throw new ForbiddenOperationException(
-                                "Il team " + winningTeam.getId()
-                                        + " è squalificato e non può essere proclamato vincitore");
-                    }
-                });
+        HackathonRegistration registration = hackathonRegistrationRepository
+                .findByHackathonIdAndTeamId(hackathonId, teamId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Il team " + teamId + " non è iscritto all'hackathon " + hackathonId));
 
-        hackathon.concludeWith(winningTeam);
+        if (registration.isDisqualified()) {
+            throw new ForbiddenOperationException(
+                    "Il team " + teamId
+                            + " è squalificato e non può essere proclamato vincitore");
+        }
+
+        hackathon.concludeWith(registration.getTeam());
         hackathonRepository.save(hackathon);
     }
 
@@ -320,6 +324,19 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 .toList();
     }
 
+    @Override
+    public List<Submission> getHackathonSubmissions(Long hackathonId, Long organizerId) {
+        Hackathon hackathon = findHackathonById(hackathonId);
+        ensureOrganizerOwnsHackathon(hackathon, organizerId);
+        // L'organizzatore è l'admin dell'evento: vede tutte le sottomissioni,
+        // incluse quelle dei team squalificati (ADR 0005 nasconde gli squalificati
+        // solo dalla consultazione pubblica e dalla classifica, non all'organizzatore).
+        return hackathon.getRegistrations().stream()
+                .map(HackathonRegistration::getSubmission)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
     private boolean isAlreadyDisbursed(Long hackathonId) {
         return prizeDisbursementRepository.findByHackathonId(hackathonId)
                 .map(d -> d.getStatus() == PrizeDisbursementStatus.SUCCESS)
@@ -334,6 +351,32 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
         hackathon.updateStatus();
         return hackathon;
+    }
+
+    private void validateSchedule(Hackathon hackathon, LocalDate currentDate) {
+        LocalDate registrationDeadline = hackathon.getRegistrationDeadline();
+        LocalDate startDate = hackathon.getStartDate();
+        LocalDate endDate = hackathon.getEndDate();
+        if (registrationDeadline == null || startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Le date non possono essere null");
+        }
+        if (hackathon.getPrizeMoney() == null || hackathon.getPrizeMoney().signum() < 0) {
+            throw new IllegalArgumentException("Il premio in denaro non può essere negativo");
+        }
+        if (hackathon.getMaxTeamSize() <= 0) {
+            throw new IllegalArgumentException("La dimensione massima del team deve essere positiva");
+        }
+        if (registrationDeadline.isBefore(currentDate)) {
+            throw new IllegalArgumentException("La scadenza iscrizioni non può essere nel passato");
+        }
+        if (startDate.isBefore(registrationDeadline)) {
+            throw new IllegalArgumentException(
+                    "La data di inizio deve essere successiva alla scadenza iscrizioni");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException(
+                    "La data di fine deve essere successiva alla data di inizio");
+        }
     }
 
     private void ensureStaffCanStillBeAssigned(Hackathon hackathon) {

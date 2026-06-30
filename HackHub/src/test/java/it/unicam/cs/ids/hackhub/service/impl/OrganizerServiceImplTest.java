@@ -27,6 +27,7 @@ import it.unicam.cs.ids.hackhub.model.Organizer;
 import it.unicam.cs.ids.hackhub.model.PaymentResult;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursement;
 import it.unicam.cs.ids.hackhub.model.PrizeDisbursementStatus;
+import it.unicam.cs.ids.hackhub.model.RegistrationStatus;
 import it.unicam.cs.ids.hackhub.model.Submission;
 import it.unicam.cs.ids.hackhub.model.Team;
 import it.unicam.cs.ids.hackhub.model.repository.HackathonRegistrationRepository;
@@ -91,12 +92,16 @@ class OrganizerServiceImplTest {
 	@Test
 	void proclaimWinnerConcludesEvaluationHackathonWithoutPaying() {
 		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
-		Team winningTeam = hackathon.getRegistrations().getFirst().getTeam();
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		HackathonRegistration registration = hackathon.getRegistrations().getFirst();
+		Team winningTeam = registration.getTeam();
 
 		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(hackathonRegistrationRepository.findByHackathonIdAndTeamId(HACKATHON_ID, WINNING_TEAM_ID))
+				.thenReturn(Optional.of(registration));
 		when(hackathonRepository.save(hackathon)).thenReturn(hackathon);
 
-		organizerService.proclaimWinner(HACKATHON_ID, winningTeam);
+		organizerService.proclaimWinner(HACKATHON_ID, ORGANIZER_ID, WINNING_TEAM_ID);
 
 		assertThat(hackathon.getWinningTeam()).isSameAs(winningTeam);
 		assertThat(hackathon.getStatus()).isEqualTo(HackathonStatus.CONCLUDED);
@@ -105,13 +110,66 @@ class OrganizerServiceImplTest {
 	}
 
 	@Test
-	void proclaimWinnerRejectsHackathonsOutsideEvaluation() {
-		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
-		Team winningTeam = new Team();
+	void proclaimWinnerRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
 
 		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
 
-		assertThatThrownBy(() -> organizerService.proclaimWinner(HACKATHON_ID, winningTeam))
+		assertThatThrownBy(() ->
+						organizerService.proclaimWinner(HACKATHON_ID, WRONG_ORGANIZER_ID, WINNING_TEAM_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(hackathonRepository, never()).save(any());
+		verify(paymentGateway, never()).payPrize(any(), any(), any());
+	}
+
+	@Test
+	void proclaimWinnerRejectsTeamNotRegistered() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(hackathonRegistrationRepository.findByHackathonIdAndTeamId(HACKATHON_ID, 999L))
+				.thenReturn(Optional.empty());
+
+		assertThatThrownBy(() ->
+						organizerService.proclaimWinner(HACKATHON_ID, ORGANIZER_ID, 999L))
+				.isInstanceOf(ResourceNotFoundException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void proclaimWinnerRejectsDisqualifiedTeam() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		HackathonRegistration registration = hackathon.getRegistrations().getFirst();
+		registration.setStatus(RegistrationStatus.DISQUALIFIED);
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(hackathonRegistrationRepository.findByHackathonIdAndTeamId(HACKATHON_ID, WINNING_TEAM_ID))
+				.thenReturn(Optional.of(registration));
+
+		assertThatThrownBy(() ->
+						organizerService.proclaimWinner(HACKATHON_ID, ORGANIZER_ID, WINNING_TEAM_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void proclaimWinnerRejectsHackathonsOutsideEvaluation() {
+		Hackathon hackathon = createHackathon(HackathonStatus.RUNNING);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+		HackathonRegistration registration = hackathon.getRegistrations().getFirst();
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(hackathonRegistrationRepository.findByHackathonIdAndTeamId(HACKATHON_ID, WINNING_TEAM_ID))
+				.thenReturn(Optional.of(registration));
+
+		assertThatThrownBy(() ->
+						organizerService.proclaimWinner(HACKATHON_ID, ORGANIZER_ID, WINNING_TEAM_ID))
 				.isInstanceOf(InvalidHackathonStateException.class);
 
 		verify(hackathonRepository, never()).save(any());
@@ -121,17 +179,115 @@ class OrganizerServiceImplTest {
 	@Test
 	void proclaimWinnerRejectsEvaluationHackathonWithPendingSubmissions() {
 		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
 		hackathon.getRegistrations().getFirst().getSubmission().setEvaluation(null);
-		Team winningTeam = hackathon.getRegistrations().getFirst().getTeam();
+		HackathonRegistration registration = hackathon.getRegistrations().getFirst();
 
 		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+		when(hackathonRegistrationRepository.findByHackathonIdAndTeamId(HACKATHON_ID, WINNING_TEAM_ID))
+				.thenReturn(Optional.of(registration));
 
-		assertThatThrownBy(() -> organizerService.proclaimWinner(HACKATHON_ID, winningTeam))
+		assertThatThrownBy(() ->
+						organizerService.proclaimWinner(HACKATHON_ID, ORGANIZER_ID, WINNING_TEAM_ID))
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage("Ci sono ancora sottomissioni non valutate");
 
 		verify(hackathonRepository, never()).save(any());
 		verify(paymentGateway, never()).payPrize(any(), any(), any());
+	}
+
+	// ---- createHackathon ----
+
+	@Test
+	void createHackathonAssociatesStaffAndPersists() {
+		LocalDate today = LocalDate.now();
+		Hackathon hackathon = new Hackathon(
+				"AI Challenge", "Le regole", "Camerino",
+				BigDecimal.valueOf(5000), 5,
+				today.plusDays(5), today.plusDays(7), today.plusDays(15));
+
+		when(organizerRepository.findById(ORGANIZER_ID))
+				.thenReturn(Optional.of(organizerWithId(ORGANIZER_ID)));
+		when(judgeRepository.findById(JUDGE_ID)).thenReturn(Optional.of(judgeWithId(JUDGE_ID)));
+		when(mentorRepository.findAllById(List.of(MENTOR_ID)))
+				.thenReturn(List.of(mentorWithId(MENTOR_ID)));
+		when(hackathonRepository.save(hackathon)).thenReturn(hackathon);
+
+		Hackathon result = organizerService.createHackathon(
+				hackathon, ORGANIZER_ID, JUDGE_ID, List.of(MENTOR_ID));
+
+		assertThat(result.getOrganizer().getId()).isEqualTo(ORGANIZER_ID);
+		assertThat(result.getJudge().getId()).isEqualTo(JUDGE_ID);
+		assertThat(result.getMentors()).hasSize(1);
+		verify(hackathonRepository).save(hackathon);
+	}
+
+	@Test
+	void createHackathonRejectsInvalidDateOrdering() {
+		LocalDate today = LocalDate.now();
+		// startDate prima della scadenza iscrizioni
+		Hackathon hackathon = new Hackathon(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(15), today.plusDays(10), today.plusDays(20));
+
+		assertThatThrownBy(() -> organizerService.createHackathon(
+						hackathon, ORGANIZER_ID, JUDGE_ID, List.of(MENTOR_ID)))
+				.isInstanceOf(IllegalArgumentException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void createHackathonRejectsRegistrationDeadlineInPast() {
+		LocalDate today = LocalDate.now();
+		Hackathon hackathon = new Hackathon(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.minusDays(1), today.plusDays(10), today.plusDays(20));
+
+		assertThatThrownBy(() -> organizerService.createHackathon(
+						hackathon, ORGANIZER_ID, JUDGE_ID, List.of(MENTOR_ID)))
+				.isInstanceOf(IllegalArgumentException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	@Test
+	void createHackathonRejectsEmptyMentors() {
+		LocalDate today = LocalDate.now();
+		Hackathon hackathon = new Hackathon(
+				"x", "x", "x", BigDecimal.ONE, 5,
+				today.plusDays(5), today.plusDays(7), today.plusDays(15));
+
+		assertThatThrownBy(() -> organizerService.createHackathon(
+						hackathon, ORGANIZER_ID, JUDGE_ID, List.of()))
+				.isInstanceOf(IllegalArgumentException.class);
+
+		verify(hackathonRepository, never()).save(any());
+	}
+
+	// ---- getHackathonSubmissions ----
+
+	@Test
+	void getHackathonSubmissionsReturnsAllSubmissions() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThat(organizerService.getHackathonSubmissions(HACKATHON_ID, ORGANIZER_ID))
+				.hasSize(1);
+	}
+
+	@Test
+	void getHackathonSubmissionsRejectsWrongOrganizer() {
+		Hackathon hackathon = createHackathon(HackathonStatus.EVALUATION);
+		hackathon.setOrganizer(organizerWithId(ORGANIZER_ID));
+
+		when(hackathonRepository.findById(HACKATHON_ID)).thenReturn(Optional.of(hackathon));
+
+		assertThatThrownBy(() ->
+						organizerService.getHackathonSubmissions(HACKATHON_ID, WRONG_ORGANIZER_ID))
+				.isInstanceOf(ForbiddenOperationException.class);
 	}
 
 	// ---- disbursePrize ----

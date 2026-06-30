@@ -1,11 +1,17 @@
 package it.unicam.cs.ids.hackhub.controllers;
 
+import it.unicam.cs.ids.hackhub.dto.hackathon.CreateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.DisqualifyTeamRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
+import it.unicam.cs.ids.hackhub.dto.hackathon.ProclaimWinnerRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
+import it.unicam.cs.ids.hackhub.dto.submission.SubmissionResponseDTO;
+import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.service.interfaces.IOrganizerService;
+import it.unicam.cs.ids.hackhub.service.mapper.HackathonMapper;
+import it.unicam.cs.ids.hackhub.service.mapper.SubmissionMapper;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -33,9 +39,59 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrganizerController {
 
 	private final IOrganizerService organizerService;
+	private final HackathonMapper hackathonMapper;
+	private final SubmissionMapper submissionMapper;
 
-	public OrganizerController(IOrganizerService organizerService) {
+	public OrganizerController(
+			IOrganizerService organizerService,
+			HackathonMapper hackathonMapper,
+			SubmissionMapper submissionMapper) {
 		this.organizerService = organizerService;
+		this.hackathonMapper = hackathonMapper;
+		this.submissionMapper = submissionMapper;
+	}
+
+	/**
+	 * Crea un nuovo hackathon. Lo staff iniziale (giudice + almeno un mentore) è
+	 * indicato nel body; l'organizzatore proprietario è il principal del path.
+	 */
+	@PostMapping("/hackathons")
+	@ResponseStatus(HttpStatus.CREATED)
+	public HackathonResponseDTO createHackathon(
+			@PathVariable Long organizerId,
+			@Valid @RequestBody CreateHackathonRequestDTO request) {
+		Hackathon created = organizerService.createHackathon(
+				hackathonMapper.toEntity(request),
+				organizerId,
+				request.judgeId(),
+				request.mentorIds());
+		return hackathonMapper.toResponse(created, false);
+	}
+
+	/**
+	 * Proclama il team vincitore di un hackathon in fase EVALUATION, concludendo
+	 * l'hackathon. Richiede che tutte le sottomissioni siano state valutate e che
+	 * il team non sia squalificato.
+	 */
+	@PostMapping("/hackathons/{hackathonId}/winner")
+	public HackathonResponseDTO proclaimWinner(
+			@PathVariable Long organizerId,
+			@PathVariable Long hackathonId,
+			@Valid @RequestBody ProclaimWinnerRequestDTO request) {
+		organizerService.proclaimWinner(hackathonId, organizerId, request.teamId());
+		return organizerService.getHackathonsByOrganizer(organizerId).stream()
+				.filter(h -> h.id().equals(hackathonId))
+				.findFirst()
+				.orElseThrow();
+	}
+
+	/** Consultazione: tutte le sottomissioni dei team iscritti all'hackathon. */
+	@GetMapping("/hackathons/{hackathonId}/submissions")
+	public List<SubmissionResponseDTO> getHackathonSubmissions(
+			@PathVariable Long organizerId, @PathVariable Long hackathonId) {
+		return organizerService.getHackathonSubmissions(hackathonId, organizerId).stream()
+				.map(submissionMapper::toResponse)
+				.toList();
 	}
 
 	@GetMapping("/hackathons")

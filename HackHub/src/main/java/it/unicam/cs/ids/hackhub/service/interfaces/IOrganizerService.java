@@ -5,7 +5,7 @@ import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
-import it.unicam.cs.ids.hackhub.model.Team;
+import it.unicam.cs.ids.hackhub.model.Submission;
 import java.util.List;
 
 public interface IOrganizerService {
@@ -54,7 +54,7 @@ public interface IOrganizerService {
 
 	List<StaffMemberSummaryDTO> getMentorsByHackathon(Long hackathonId, Long organizerId);
 
-	void proclaimWinner(Long hackathonId, Team winningTeam);
+	void proclaimWinner(Long hackathonId, Long organizerId, Long teamId);
 
 	List<HackathonResponseDTO> getHackathonsByOrganizer(Long organizerId);
 
@@ -90,4 +90,11 @@ public interface IOrganizerService {
 	 *         la fase non è RUNNING o EVALUATION
 	 */
 	void disqualifyTeam(Long hackathonId, Long organizerId, Long teamId, String reason);
+
+	/**
+	 * Restituisce tutte le sottomissioni dei team iscritti all'hackathon, per la
+	 * consultazione da parte dell'organizzatore proprietario. Include le
+	 * sottomissioni dei team squalificati.
+	 */
+	List<Submission> getHackathonSubmissions(Long hackathonId, Long organizerId);
 }
