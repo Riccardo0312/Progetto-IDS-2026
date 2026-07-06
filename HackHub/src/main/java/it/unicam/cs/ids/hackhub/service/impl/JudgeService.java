@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Evaluation;
@@ -32,6 +33,7 @@ public class JudgeService implements IJudgeService {
 	private final EvaluationRepository evaluationRepository;
 	private final EvaluationRequestValidator evaluationRequestValidator;
 	private final EvaluationInputValidator evaluationInputValidator;
+	private final CurrentDateProvider currentDateProvider;
 
 	public JudgeService(
 			JudgeRepository judgeRepository,
@@ -42,13 +44,15 @@ public class JudgeService implements IJudgeService {
 			HackathonInEvaluationValidator hackathonInEvaluationValidator,
 			SubmissionBelongsToHackathonValidator submissionBelongsToHackathonValidator,
 			SubmissionNotAlreadyEvaluatedValidator submissionNotAlreadyEvaluatedValidator,
-			EvaluationInputValidator evaluationInputValidator) {
+			EvaluationInputValidator evaluationInputValidator,
+			CurrentDateProvider currentDateProvider) {
 		this.judgeRepository = judgeRepository;
 		this.hackathonRepository = hackathonRepository;
 		this.submissionRepository = submissionRepository;
 		this.evaluationRepository = evaluationRepository;
 		this.evaluationRequestValidator = judgeAssignedToHackathonValidator;
 		this.evaluationInputValidator = evaluationInputValidator;
+		this.currentDateProvider = currentDateProvider;
 
 		judgeAssignedToHackathonValidator
 				.setNext(hackathonInEvaluationValidator)
@@ -143,10 +147,10 @@ public class JudgeService implements IJudgeService {
 				hackathonRepository
 						.findById(hackathonId)
 						.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
-		// Allinea lo status persistito al tempo reale prima delle guardie di ruolo:
+		// Allinea lo status persistito alla data applicativa prima delle guardie di ruolo:
 		// un hackathon con endDate gia passata deve poter essere valutato dal giudice
 		// anche se nessuno ha ancora forzato il refresh.
-		hackathon.updateStatus();
+		hackathon.updateStatus(currentDateProvider.today());
 		return hackathon;
 	}
 

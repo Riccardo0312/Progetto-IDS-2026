@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.dto.team.HackathonSummaryDTO;
 import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
@@ -34,19 +35,22 @@ public class TeamService implements ITeamService {
     private final InvitationRepository invitationRepository;
     private final HackathonRegistrationRepository hackathonRegistrationRepository;
     private final SubmissionRepository submissionRepository;
+    private final CurrentDateProvider currentDateProvider;
 
     public TeamService(TeamRepository teamRepository,
                        TeamMemberRepository teamMemberRepository,
                        UserRepository userRepository,
                        InvitationRepository invitationRepository,
                        HackathonRegistrationRepository hackathonRegistrationRepository,
-                       SubmissionRepository submissionRepository) {
+                       SubmissionRepository submissionRepository,
+                       CurrentDateProvider currentDateProvider) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
         this.hackathonRegistrationRepository = hackathonRegistrationRepository;
         this.submissionRepository = submissionRepository;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @Override
@@ -107,7 +111,7 @@ public class TeamService implements ITeamService {
 
         boolean hasBlockingRegistration = team.getRegistrations().stream()
                 .anyMatch(r -> {
-                    r.getHackathon().updateStatus();
+                    r.getHackathon().updateStatus(currentDateProvider.today());
                     return r.getHackathon().getStatus() != HackathonStatus.REGISTRATION;
                 });
         if (hasBlockingRegistration) {

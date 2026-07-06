@@ -4,6 +4,7 @@ import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonDetailDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonListItemDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonRegistrationsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.TeamSummaryDTO;
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
 import it.unicam.cs.ids.hackhub.model.HackathonStatus;
@@ -26,21 +27,24 @@ public class GuestServiceImpl implements IGuestService {
     private final UserRepository userRepository;
     private final HackathonRegistrationRepository hackathonRegistrationRepository;
     private final HackathonMapper hackathonMapper;
+    private final CurrentDateProvider currentDateProvider;
 
     public GuestServiceImpl(HackathonRepository hackathonRepository,
                             UserRepository userRepository,
                             HackathonRegistrationRepository hackathonRegistrationRepository,
-                            HackathonMapper hackathonMapper) {
+                            HackathonMapper hackathonMapper,
+                            CurrentDateProvider currentDateProvider) {
         this.hackathonRepository = hackathonRepository;
         this.userRepository = userRepository;
         this.hackathonRegistrationRepository = hackathonRegistrationRepository;
         this.hackathonMapper = hackathonMapper;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @Override
     public List<HackathonListItemDTO> getAllHackathons() {
         return hackathonRepository.findAllByOrderByStartDateAsc().stream()
-                .peek(Hackathon::updateStatus)
+                .peek(this::refreshHackathonStatus)
                 .map(hackathonMapper::toListItem)
                 .toList();
     }
@@ -51,7 +55,7 @@ public class GuestServiceImpl implements IGuestService {
             throw new IllegalArgumentException("Lo stato non può essere null");
         }
         return hackathonRepository.findAllByOrderByStartDateAsc().stream()
-                .peek(Hackathon::updateStatus)
+                .peek(this::refreshHackathonStatus)
                 .filter(hackathon -> hackathon.getStatus() == status)
                 .map(hackathonMapper::toListItem)
                 .toList();
@@ -64,8 +68,12 @@ public class GuestServiceImpl implements IGuestService {
         }
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
-        hackathon.updateStatus();
+        refreshHackathonStatus(hackathon);
         return hackathonMapper.toDetail(hackathon);
+    }
+
+    private void refreshHackathonStatus(Hackathon hackathon) {
+        hackathon.updateStatus(currentDateProvider.today());
     }
 
     @Transactional

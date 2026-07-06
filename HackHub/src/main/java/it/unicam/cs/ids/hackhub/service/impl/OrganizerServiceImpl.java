@@ -4,6 +4,7 @@ import it.unicam.cs.ids.hackhub.dto.hackathon.HackathonResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;
@@ -53,6 +54,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
     private final IPaymentGateway paymentGateway;
     private final HackathonMapper hackathonMapper;
     private final PrizeDisbursementMapper prizeDisbursementMapper;
+    private final CurrentDateProvider currentDateProvider;
 
     public OrganizerServiceImpl(
             HackathonRepository hackathonRepository,
@@ -63,7 +65,8 @@ public class OrganizerServiceImpl implements IOrganizerService {
             HackathonRegistrationRepository hackathonRegistrationRepository,
             IPaymentGateway paymentGateway,
             HackathonMapper hackathonMapper,
-            PrizeDisbursementMapper prizeDisbursementMapper) {
+            PrizeDisbursementMapper prizeDisbursementMapper,
+            CurrentDateProvider currentDateProvider) {
         this.hackathonRepository = hackathonRepository;
         this.organizerRepository = organizerRepository;
         this.judgeRepository = judgeRepository;
@@ -73,6 +76,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         this.paymentGateway = paymentGateway;
         this.hackathonMapper = hackathonMapper;
         this.prizeDisbursementMapper = prizeDisbursementMapper;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         if (mentorIds == null || mentorIds.isEmpty()) {
             throw new IllegalArgumentException("Almeno un mentore è obbligatorio");
         }
-        validateSchedule(hackathon, LocalDate.now());
+        validateSchedule(hackathon, currentDateProvider.today());
 
         Organizer organizer = organizerRepository.findById(organizerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organizzatore", organizerId));
@@ -296,7 +300,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
                 request.registrationDeadline(),
                 request.startDate(),
                 request.endDate(),
-                LocalDate.now());
+                currentDateProvider.today());
         hackathonRepository.save(hackathon);
     }
 
@@ -349,7 +353,7 @@ public class OrganizerServiceImpl implements IOrganizerService {
         }
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
-        hackathon.updateStatus();
+        hackathon.updateStatus(currentDateProvider.today());
         return hackathon;
     }
 

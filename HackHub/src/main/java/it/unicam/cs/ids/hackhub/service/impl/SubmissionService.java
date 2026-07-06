@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
@@ -34,15 +35,18 @@ public class SubmissionService implements ISubmissionService {
     private final SubmissionRepository submissionRepository;
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final CurrentDateProvider currentDateProvider;
 
     public SubmissionService(HackathonRegistrationRepository registrationRepository,
                              SubmissionRepository submissionRepository,
                              UserRepository userRepository,
-                             TeamMemberRepository teamMemberRepository) {
+                             TeamMemberRepository teamMemberRepository,
+                             CurrentDateProvider currentDateProvider) {
         this.registrationRepository = registrationRepository;
         this.submissionRepository = submissionRepository;
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class SubmissionService implements ISubmissionService {
      * permetta azioni sulle sottomissioni (solo {@code RUNNING}).
      */
     private void ensureHackathonAcceptsSubmissions(Hackathon hackathon) {
-        hackathon.updateStatus();
+        hackathon.updateStatus(currentDateProvider.today());
         hackathon.ensureSubmissionActionsAllowed();
     }
 

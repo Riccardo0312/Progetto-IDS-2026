@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
@@ -24,15 +25,18 @@ public class MentoringService implements IMentoringRequestService {
     private final HackathonRegistrationRepository registrationRepository;
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final CurrentDateProvider currentDateProvider;
 
     public MentoringService(SupportRequestRepository supportRequestRepository,
                             HackathonRegistrationRepository registrationRepository,
                             UserRepository userRepository,
-                            TeamMemberRepository teamMemberRepository) {
+                            TeamMemberRepository teamMemberRepository,
+                            CurrentDateProvider currentDateProvider) {
         this.supportRequestRepository = supportRequestRepository;
         this.registrationRepository = registrationRepository;
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.currentDateProvider = currentDateProvider;
     }
 
 	@Override
@@ -87,7 +91,7 @@ public class MentoringService implements IMentoringRequestService {
 	}
 
     private void ensureHackathonAcceptsSupportRequests(Hackathon hackathon) {
-        hackathon.updateStatus();
+        hackathon.updateStatus(currentDateProvider.today());
         hackathon.ensureSupportRequestsAllowed();
     }
 

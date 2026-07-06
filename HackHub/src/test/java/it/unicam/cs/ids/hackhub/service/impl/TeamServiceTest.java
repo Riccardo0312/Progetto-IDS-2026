@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.dto.team.TeamDetailsDTO;
 import it.unicam.cs.ids.hackhub.dto.team.UserSummaryDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
@@ -24,13 +25,13 @@ import it.unicam.cs.ids.hackhub.model.repository.SubmissionRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamMemberRepository;
 import it.unicam.cs.ids.hackhub.model.repository.TeamRepository;
 import it.unicam.cs.ids.hackhub.model.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -44,7 +45,7 @@ class TeamServiceTest {
     @Mock HackathonRegistrationRepository hackathonRegistrationRepository;
     @Mock SubmissionRepository submissionRepository;
 
-    @InjectMocks TeamService teamService;
+    TeamService teamService;
 
     private User creator;
     private Team team;
@@ -52,6 +53,15 @@ class TeamServiceTest {
 
     @BeforeEach
     void setUp() {
+        teamService = new TeamService(
+                teamRepository,
+                teamMemberRepository,
+                userRepository,
+                invitationRepository,
+                hackathonRegistrationRepository,
+                submissionRepository,
+                new CurrentDateProvider(""));
+
         creator = new User();
         creator.setId(1L);
         creator.setEmail("leader@test.it");

@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.dto.leaderboard.LeaderboardEntryDTO;
 import it.unicam.cs.ids.hackhub.dto.leaderboard.LeaderboardResponseDTO;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
@@ -22,12 +23,15 @@ public class LeaderboardService implements ILeaderboardService {
 
     private final HackathonRepository hackathonRepository;
     private final EvaluationRepository evaluationRepository;
+    private final CurrentDateProvider currentDateProvider;
 
     public LeaderboardService(
             HackathonRepository hackathonRepository,
-            EvaluationRepository evaluationRepository) {
+            EvaluationRepository evaluationRepository,
+            CurrentDateProvider currentDateProvider) {
         this.hackathonRepository = hackathonRepository;
         this.evaluationRepository = evaluationRepository;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class LeaderboardService implements ILeaderboardService {
                 .findById(hackathonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
 
-        hackathon.updateStatus();
+        hackathon.updateStatus(currentDateProvider.today());
         validateLeaderboardAvailable(hackathon);
         validateFinalScoresAvailable(hackathon);
 

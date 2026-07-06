@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import it.unicam.cs.ids.hackhub.dto.hackathon.UpdateHackathonRequestDTO;
 import it.unicam.cs.ids.hackhub.dto.prize.PrizeDisbursementResponseDTO;
 import it.unicam.cs.ids.hackhub.dto.staff.StaffMemberSummaryDTO;
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.InvalidHackathonStateException;
 import it.unicam.cs.ids.hackhub.exception.PrizeAlreadyDisbursedException;
@@ -84,7 +85,8 @@ class OrganizerServiceImplTest {
 				hackathonRegistrationRepository,
 				paymentGateway,
 				hackathonMapper,
-				prizeDisbursementMapper);
+				prizeDisbursementMapper,
+				new CurrentDateProvider(""));
 	}
 
 	// ---- proclaimWinner ----

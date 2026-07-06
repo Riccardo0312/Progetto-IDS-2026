@@ -38,3 +38,4 @@ CONTEXT.md
 HackHub/data/hackhub.trace.db
 .gitignore
 CONTEXT.md
+postman/

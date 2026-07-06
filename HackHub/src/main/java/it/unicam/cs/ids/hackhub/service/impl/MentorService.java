@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.service.impl;
 
+import it.unicam.cs.ids.hackhub.config.CurrentDateProvider;
 import it.unicam.cs.ids.hackhub.exception.ForbiddenOperationException;
 import it.unicam.cs.ids.hackhub.exception.ResourceNotFoundException;
 import it.unicam.cs.ids.hackhub.model.Hackathon;
@@ -38,6 +39,7 @@ public class MentorService implements IMentorService {
 	private final HackathonRegistrationRepository hackathonRegistrationRepository;
 	private final ViolationReportRepository violationReportRepository;
 	private final ICalendarGateway calendarGateway;
+	private final CurrentDateProvider currentDateProvider;
 
 	public MentorService(
 			MentorRepository mentorRepository,
@@ -48,7 +50,8 @@ public class MentorService implements IMentorService {
 			TeamRepository teamRepository,
 			HackathonRegistrationRepository hackathonRegistrationRepository,
 			ViolationReportRepository violationReportRepository,
-			ICalendarGateway calendarGateway) {
+			ICalendarGateway calendarGateway,
+			CurrentDateProvider currentDateProvider) {
 		this.mentorRepository = mentorRepository;
 		this.hackathonRepository = hackathonRepository;
 		this.supportRequestRepository = supportRequestRepository;
@@ -58,6 +61,7 @@ public class MentorService implements IMentorService {
 		this.hackathonRegistrationRepository = hackathonRegistrationRepository;
 		this.violationReportRepository = violationReportRepository;
 		this.calendarGateway = calendarGateway;
+		this.currentDateProvider = currentDateProvider;
 	}
 
 	@Override
@@ -180,9 +184,9 @@ public class MentorService implements IMentorService {
 				hackathonRepository
 						.findById(hackathonId)
 						.orElseThrow(() -> new ResourceNotFoundException("Hackathon", hackathonId));
-		// Allinea lo status persistito al tempo reale prima di applicare le guardie:
+		// Allinea lo status persistito alla data applicativa prima di applicare le guardie:
 		// evita che un hackathon con endDate gia passata risulti ancora RUNNING per il client.
-		hackathon.updateStatus();
+		hackathon.updateStatus(currentDateProvider.today());
 		return hackathon;
 	}
 
