@@ -1,0 +1,3011 @@
+{
+  "info": {
+    "_postman_id": "b17a387d-f506-4a81-a259-897ed14a1651",
+    "name": "HackHub API",
+    "description": "Collection generata dal codice Spring Boot HackHub. Usa {{baseUrl}} e variabili token/ID per eseguire le API reali del progetto.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40285822",
+    "_collection_link": "https://go.postman.co/collection/40285822-b17a387d-f506-4a81-a259-897ed14a1651?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Autenticazione",
+      "item": [
+        {
+          "name": "Login",
+          "item": [
+            {
+              "name": "Login utente",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login utente 6",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente6@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login utente 5",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login utente 4",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente4@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login utente 3",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login utente 2",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login organizzatore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"organizzatore@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login giudice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"giudice@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login mentore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"mentore@example.com\",\n  \"password\": \"password123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Registrazione",
+          "item": [
+            {
+              "name": "Registrazione utente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mario Rossi\",\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione utente 6",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mario Rossi\",\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione utente 5",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Anna Rossi\",\n  \"email\": \"utente5@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione utente 4",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mario Rossi\",\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione utente 3",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mario Rossi\",\n  \"email\": \"utente@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione utente 2",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Pino Verdi\",\n  \"email\": \"utente2@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione organizzatore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Olivia Bianchi\",\n  \"email\": \"organizzatore@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"ORGANIZER\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione mentore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Marco Neri\",\n  \"email\": \"mentore@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"MENTOR\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Registrazione giudice",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Giulia Verdi\",\n  \"email\": \"giudice@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"JUDGE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Utente corrente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Restituisce il profilo del principal JWT corrente."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Logout lato server con revoca del token Authorization corrente."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "noauth"
+      }
+    },
+    {
+      "name": "API Pubbliche",
+      "item": [
+        {
+          "name": "Lista hackathon",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons?status={{hackathonStatus}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "{{hackathonStatus}}",
+                  "description": "Filtro opzionale: REGISTRATION, RUNNING, EVALUATION, CONCLUDED, CANCELLED."
+                }
+              ]
+            },
+            "description": "Endpoint pubblico. Restituisce tutti gli hackathon o filtra per stato se status e valorizzato."
+          },
+          "response": []
+        },
+        {
+          "name": "Dettaglio hackathon",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}"
+              ]
+            },
+            "description": "Endpoint pubblico per consultare il dettaglio di un hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Iscrizioni hackathon pubbliche",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "registrations"
+              ]
+            },
+            "description": "Endpoint pubblico per consultare team iscritti e stato iscrizioni di un hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Dettaglio team pubblico",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}"
+              ]
+            },
+            "description": "Endpoint pubblico abilitato da SecurityConfig per consultare il dettaglio di un team."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Team",
+      "item": [
+        {
+          "name": "Crea team 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Team Algoritmi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il creatore del team e il principal JWT, non un campo del body."
+          },
+          "response": []
+        },
+        {
+          "name": "Crea team 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Team Algoritmi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il creatore del team e il principal JWT, non un campo del body."
+          },
+          "response": []
+        },
+        {
+          "name": "Crea team 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Team Algoritmi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il creatore del team e il principal JWT, non un campo del body."
+          },
+          "response": []
+        },
+        {
+          "name": "Lascia team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"successorEmail\": \"successore@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}/leave",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}",
+                "leave"
+              ]
+            },
+            "description": "Richiede appartenenza al team. successorEmail e richiesto dal service solo se chi lascia e il leader; per un membro semplice puo essere null."
+          },
+          "response": []
+        },
+        {
+          "name": "Elimina team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team."
+          },
+          "response": []
+        },
+        {
+          "name": "Visualizza proprio team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}/view",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}",
+                "view"
+              ]
+            },
+            "description": "Richiede appartenenza al team. Esiste oltre al GET pubblico per il caso d'uso autenticato."
+          },
+          "response": []
+        },
+        {
+          "name": "Espelli membro dal team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}/expel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}",
+                "expel"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team. Il membro indicato non deve essere il leader."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inviti",
+      "item": [
+        {
+          "name": "Lista inviti pendenti",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Restituisce gli inviti pendenti del principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Invia invito team 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 24,\n  \"recipientEmail\": \"utente2@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        },
+        {
+          "name": "Invia invito team 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{supabase_service_role_api_key_096u}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 25,\n  \"recipientEmail\": \"utente4@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        },
+        {
+          "name": "Invia invito team 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1,\n  \"recipientEmail\": \"nuovo.membro@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        },
+        {
+          "name": "Accetta invito 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations/{{invitationId}}/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations",
+                "{{invitationId}}",
+                "accept"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Accetta l'invito per il principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Accetta invito 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations/{{invitationId}}/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations",
+                "{{invitationId}}",
+                "accept"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Accetta l'invito per il principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Accetta invito 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations/{{invitationId}}/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations",
+                "{{invitationId}}",
+                "accept"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Accetta l'invito per il principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Rifiuta invito",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/invitations/{{invitationId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "invitations",
+                "{{invitationId}}",
+                "reject"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Rifiuta l'invito per il principal JWT."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Iscrizioni Hackathon",
+      "item": [
+        {
+          "name": "Iscrivi team a hackathon 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "registrations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        },
+        {
+          "name": "Iscrivi team a hackathon 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "registrations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        },
+        {
+          "name": "Iscrivi team a hackathon 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "registrations"
+              ]
+            },
+            "description": "Richiede che il principal JWT sia leader del team indicato nel body."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sottomissioni",
+      "item": [
+        {
+          "name": "Invia sottomissione 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prototype Hub\",\n  \"description\": \"Piattaforma dimostrativa per coordinare team e mentor durante un hackathon.\",\n  \"projectLink\": \"https://github.com/example/prototype-hub\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/submission",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "submission"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il team e ricavato dall'iscrizione e dal principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Invia sottomissione 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prototype Hub\",\n  \"description\": \"Piattaforma dimostrativa per coordinare team e mentor durante un hackathon.\",\n  \"projectLink\": \"https://github.com/example/prototype-hub\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/submission",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "submission"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il team e ricavato dall'iscrizione e dal principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Invia sottomissione 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prototype Hub\",\n  \"description\": \"Piattaforma dimostrativa per coordinare team e mentor durante un hackathon.\",\n  \"projectLink\": \"https://github.com/example/prototype-hub\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/submission",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "submission"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Il team e ricavato dall'iscrizione e dal principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggiorna sottomissione",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prototype Hub aggiornato\",\n  \"description\": \"Versione aggiornata con demo, documentazione tecnica e istruzioni di avvio.\",\n  \"projectLink\": \"https://github.com/example/prototype-hub/releases/latest\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/submissions/{{submissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "submissions",
+                "{{submissionId}}"
+              ]
+            },
+            "description": "Richiede ROLE_USER e proprieta della sottomissione tramite team del principal JWT."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Organizzatore",
+      "item": [
+        {
+          "name": "Crea hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"HackHub AI Challenge 2026\",\n  \"rules\": \"Sviluppare un prototipo funzionante in 48 ore rispettando il regolamento pubblicato.\",\n  \"location\": \"Universita di Camerino\",\n  \"prizeMoney\": 1500.0,\n  \"maxTeamSize\": 5,\n  \"registrationDeadline\": \"2026-09-15\",\n  \"startDate\": \"2026-10-01\",\n  \"endDate\": \"2026-10-03\",\n  \"judgeId\": 4,\n  \"mentorIds\": [\n    3\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons"
+              ]
+            },
+            "description": "Richiede ROLE_ORGANIZER e che organizerId corrisponda al principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Proclama vincitore",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/winner",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "winner"
+              ]
+            },
+            "description": "Richiede ROLE_ORGANIZER. Valido solo quando tutte le sottomissioni dell'hackathon sono state valutate."
+          },
+          "response": []
+        },
+        {
+          "name": "Sottomissioni hackathon organizzatore",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/submissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "submissions"
+              ]
+            },
+            "description": "Richiede ROLE_ORGANIZER e ownership dell'hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Hackathon dell'organizzatore",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons"
+              ]
+            },
+            "description": "Restituisce gli hackathon dell'organizzatore autenticato."
+          },
+          "response": []
+        },
+        {
+          "name": "Eroga premio",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/prize-disbursement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "prize-disbursement"
+              ]
+            },
+            "description": "Richiede hackathon concluso con vincitore proclamato. Operazione idempotente secondo il service."
+          },
+          "response": []
+        },
+        {
+          "name": "Dettaglio erogazione premio",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/prize-disbursement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "prize-disbursement"
+              ]
+            },
+            "description": "Restituisce lo stato dell'erogazione premio per l'hackathon dell'organizzatore."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggiungi mentore a hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/mentors/{{mentorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "mentors",
+                "{{mentorId}}"
+              ]
+            },
+            "description": "Assegna un mentore disponibile all'hackathon dell'organizzatore."
+          },
+          "response": []
+        },
+        {
+          "name": "Rimuovi mentore da hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/mentors/{{mentorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "mentors",
+                "{{mentorId}}"
+              ]
+            },
+            "description": "Rimuove un mentore assegnato all'hackathon dell'organizzatore."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggiungi giudice a hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/judge/{{judgeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "judge",
+                "{{judgeId}}"
+              ]
+            },
+            "description": "Assegna un giudice all'hackathon dell'organizzatore."
+          },
+          "response": []
+        },
+        {
+          "name": "Sostituisci giudice hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/judge/{{newJudgeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "judge",
+                "{{newJudgeId}}"
+              ]
+            },
+            "description": "Sostituisce atomicamente il giudice assegnato all'hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Annulla hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}"
+              ]
+            },
+            "description": "Annulla l'hackathon prima dell'inizio, se lo stato lo consente."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggiorna hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"HackHub AI Challenge 2026 - Updated\",\n  \"rules\": \"Sviluppare un prototipo funzionante con repository pubblico e pitch finale.\",\n  \"location\": \"Camerino Innovation Lab\",\n  \"prizeMoney\": 2000.0,\n  \"maxTeamSize\": 5,\n  \"registrationDeadline\": \"2026-09-20\",\n  \"startDate\": \"2026-10-05\",\n  \"endDate\": \"2026-10-07\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}"
+              ]
+            },
+            "description": "Modifica solo i parametri descrittivi/logistici dell'hackathon in fase REGISTRATION."
+          },
+          "response": []
+        },
+        {
+          "name": "Mentori disponibili",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/mentors/available",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "mentors",
+                "available"
+              ]
+            },
+            "description": "Elenca i mentori disponibili per assegnazione."
+          },
+          "response": []
+        },
+        {
+          "name": "Giudici disponibili",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/judges/available",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "judges",
+                "available"
+              ]
+            },
+            "description": "Elenca i giudici disponibili per assegnazione."
+          },
+          "response": []
+        },
+        {
+          "name": "Mentori assegnati a hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/mentors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "mentors"
+              ]
+            },
+            "description": "Elenca i mentori assegnati a un hackathon dell'organizzatore."
+          },
+          "response": []
+        },
+        {
+          "name": "Squalifica team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{organizerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Violazione del regolamento durante la fase di sviluppo.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/organizers/{{organizerId}}/hackathons/{{hackathonId}}/teams/{{teamId}}/disqualification",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organizers",
+                "{{organizerId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "teams",
+                "{{teamId}}",
+                "disqualification"
+              ]
+            },
+            "description": "Squalifica un team in modo irreversibile se lo stato dell'hackathon lo consente."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Giudice",
+      "item": [
+        {
+          "name": "Sottomissioni assegnate al giudice",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{judgeToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/judges/{{judgeId}}/hackathons/{{hackathonId}}/submissions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "judges",
+                "{{judgeId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "submissions"
+              ]
+            },
+            "description": "Richiede ROLE_JUDGE e corrispondenza tra judgeId e principal JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Sottomissioni gia valutate",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{judgeToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/judges/{{judgeId}}/hackathons/{{hackathonId}}/submissions/evaluated",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "judges",
+                "{{judgeId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "submissions",
+                "evaluated"
+              ]
+            },
+            "description": "Restituisce le sottomissioni gia valutate dal giudice per l'hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Valuta sottomissione",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{judgeToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"judgment\": \"Progetto completo, ben documentato e coerente con il tema.\",\n  \"score\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/judges/{{judgeId}}/hackathons/{{hackathonId}}/submissions/{{submissionId}}/evaluation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "judges",
+                "{{judgeId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "submissions",
+                "{{submissionId}}",
+                "evaluation"
+              ]
+            },
+            "description": "Crea una valutazione con punteggio da 0 a 10."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggiorna valutazione",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{judgeToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"judgment\": \"Valutazione aggiornata dopo revisione della demo finale.\",\n  \"score\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/judges/{{judgeId}}/hackathons/{{hackathonId}}/submissions/{{submissionId}}/evaluation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "judges",
+                "{{judgeId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "submissions",
+                "{{submissionId}}",
+                "evaluation"
+              ]
+            },
+            "description": "Sostituisce giudizio e punteggio della valutazione esistente."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Mentoring e Supporto",
+      "item": [
+        {
+          "name": "Crea richiesta supporto 1",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Abbiamo bisogno di chiarimenti sull'integrazione del servizio esterno.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/support-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "support-requests"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Crea una richiesta di supporto per l'iscrizione indicata."
+          },
+          "response": []
+        },
+        {
+          "name": "Crea richiesta supporto 2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Abbiamo bisogno di chiarimenti sull'integrazione del servizio esterno.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/support-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "support-requests"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Crea una richiesta di supporto per l'iscrizione indicata."
+          },
+          "response": []
+        },
+        {
+          "name": "Crea richiesta supporto 3",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Abbiamo bisogno di chiarimenti sull'integrazione del servizio esterno.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{registrationId}}/support-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registrations",
+                "{{registrationId}}",
+                "support-requests"
+              ]
+            },
+            "description": "Richiede ROLE_USER. Crea una richiesta di supporto per l'iscrizione indicata."
+          },
+          "response": []
+        },
+        {
+          "name": "Richieste supporto del team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}/support-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}",
+                "support-requests"
+              ]
+            },
+            "description": "Richiede appartenenza al team."
+          },
+          "response": []
+        },
+        {
+          "name": "Dettaglio richiesta supporto team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/teams/{{teamId}}/support-requests/{{supportRequestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "teams",
+                "{{teamId}}",
+                "support-requests",
+                "{{supportRequestId}}"
+              ]
+            },
+            "description": "Richiede appartenenza al team."
+          },
+          "response": []
+        },
+        {
+          "name": "Richieste supporto assegnate al mentore",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mentorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mentors/{{mentorId}}/hackathons/{{hackathonId}}/support-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mentors",
+                "{{mentorId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "support-requests"
+              ]
+            },
+            "description": "Richiede ROLE_MENTOR, mentorId corrispondente al principal e assegnazione all'hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Dettaglio richiesta supporto mentore",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mentorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mentors/{{mentorId}}/hackathons/{{hackathonId}}/support-requests/{{supportRequestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mentors",
+                "{{mentorId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "support-requests",
+                "{{supportRequestId}}"
+              ]
+            },
+            "description": "Richiede ROLE_MENTOR e assegnazione all'hackathon."
+          },
+          "response": []
+        },
+        {
+          "name": "Proponi chiamata mentoring",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mentorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proposedSlots\": \"2026-10-01T15:00 Europe/Rome; 2026-10-01T17:30 Europe/Rome\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mentors/{{mentorId}}/hackathons/{{hackathonId}}/support-requests/{{supportRequestId}}/call-proposal",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mentors",
+                "{{mentorId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "support-requests",
+                "{{supportRequestId}}",
+                "call-proposal"
+              ]
+            },
+            "description": "Il DTO richiede proposedSlots come stringa, non come array."
+          },
+          "response": []
+        },
+        {
+          "name": "Rispondi a richiesta supporto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mentorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Verificate la configurazione del client HTTP e condividete il log della chiamata fallita.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mentors/{{mentorId}}/hackathons/{{hackathonId}}/support-requests/{{supportRequestId}}/response",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mentors",
+                "{{mentorId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "support-requests",
+                "{{supportRequestId}}",
+                "response"
+              ]
+            },
+            "description": "Crea una risposta del mentore alla richiesta di supporto."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Segnalazioni Violazioni",
+      "item": [
+        {
+          "name": "Visualizza segnalazioni violazioni",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/violations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "violations"
+              ]
+            },
+            "description": "Richiede un ruolo autenticato tra USER, ORGANIZER, MENTOR o JUDGE; la visibilita effettiva e filtrata dal service."
+          },
+          "response": []
+        },
+        {
+          "name": "Segnala violazione",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mentorToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": 1,\n  \"description\": \"Il team ha condiviso codice non consentito dal regolamento.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mentors/{{mentorId}}/hackathons/{{hackathonId}}/violations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mentors",
+                "{{mentorId}}",
+                "hackathons",
+                "{{hackathonId}}",
+                "violations"
+              ]
+            },
+            "description": "Richiede ROLE_MENTOR e assegnazione del mentore all'hackathon."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classifica",
+      "item": [
+        {
+          "name": "Classifica hackathon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hackathons/{{hackathonId}}/leaderboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hackathons",
+                "{{hackathonId}}",
+                "leaderboard"
+              ]
+            },
+            "description": "Richiede autenticazione. Genera o restituisce la classifica dell'hackathon."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userToken",
+      "value": ""
+    },
+    {
+      "key": "organizerToken",
+      "value": ""
+    },
+    {
+      "key": "mentorToken",
+      "value": ""
+    },
+    {
+      "key": "judgeToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "organizerId",
+      "value": "3"
+    },
+    {
+      "key": "mentorId",
+      "value": "3"
+    },
+    {
+      "key": "judgeId",
+      "value": "4"
+    },
+    {
+      "key": "adminId",
+      "value": "5"
+    },
+    {
+      "key": "newJudgeId",
+      "value": "5"
+    },
+    {
+      "key": "teamId",
+      "value": "1"
+    },
+    {
+      "key": "memberId",
+      "value": "2"
+    },
+    {
+      "key": "hackathonId",
+      "value": "1"
+    },
+    {
+      "key": "registrationId",
+      "value": "1"
+    },
+    {
+      "key": "submissionId",
+      "value": "1"
+    },
+    {
+      "key": "invitationId",
+      "value": "1"
+    },
+    {
+      "key": "supportRequestId",
+      "value": "1"
+    },
+    {
+      "key": "hackathonStatus",
+      "value": "REGISTRATION"
+    },
+    {
+      "key": "supabase_service_role_api_key_096u",
+      "secret": true
+    }
+  ]
+}
